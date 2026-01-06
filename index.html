@@ -181,6 +181,28 @@
                 e.target.reset();
             });
         });
+// Export to CSV function
+document.getElementById('export-btn').addEventListener('click', () => {
+    const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
+    loansRef.get().then((snapshot) => {
+        let csv = 'Borrower,Amount,Due Date,Notes,Status,Paid Date\n';
+        snapshot.forEach(doc => {
+            const loan = doc.data();
+            const status = loan.paid ? 'Paid' : 'Unpaid';
+            const paidDate = loan.paid ? new Date().toISOString().split('T')[0] : '';
+            csv += `"${loan.borrower}","${loan.amount}","${loan.dueDate}","${loan.notes || ''}","${status}","${paidDate}"\n`;
+        });
+
+        // Create download link
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `my-loans-${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
+});      
     </script>
 </body>
 </html>
