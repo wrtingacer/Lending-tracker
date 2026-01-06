@@ -149,12 +149,17 @@
                     }
                 });
                 // === END REMINDERS ===
-            } else {
+                       } else {
                 currentUser = null;
                 document.getElementById('auth-section').style.display = 'block';
                 document.getElementById('app-section').style.display = 'none';
                 document.getElementById('auth-message').textContent = '';
-                if (unsubscribeLoans) unsubscribeLoans();
+                document.getElementById('loans-list').innerHTML = '';  // Clear visible loans
+                if (unsubscribeLoans) {
+                    unsubscribeLoans();
+                    unsubscribeLoans = null;  // Critical fix
+                }
+                currentLoans = [];  // Clear cache
             }
         });
 
