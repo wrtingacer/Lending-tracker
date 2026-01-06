@@ -24,7 +24,7 @@
             <p id="auth-message" style="color: red; margin-top: 15px; min-height: 20px;"></p>
         </div>
 
-        <!-- Main App Section (hidden until logged in) -->
+        <!-- Main App Section -->
         <div id="app-section" style="display: none;">
             <h1>Personal Lending Tracker</h1>
             <p>Welcome, <strong id="user-email"></strong> | <button id="logout-btn">Log Out</button></p>
@@ -56,7 +56,6 @@
     </div>
 
     <script>
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBsHw8C5h6nPunSbvR5ssWHdGzPCM8qcNI",
             authDomain: "lending-tracker-2ded9.firebaseapp.com",
@@ -76,7 +75,6 @@
         let unsubscribeLoans = null;
         let currentLoans = [];
 
-        // Auth State Listener
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
@@ -84,9 +82,9 @@
                 document.getElementById('app-section').style.display = 'block';
                 document.getElementById('user-email').textContent = user.email;
 
-                loadLoans();
+                loadLoans();  // Fresh load every time
 
-                // === REMINDERS SETUP ===
+                // Reminders setup
                 const notifyStatus = document.getElementById('notify-status');
                 const notifyToggle = document.getElementById('notify-toggle');
                 let notificationInterval = null;
@@ -148,8 +146,8 @@
                         });
                     }
                 });
-                // === END REMINDERS ===
             } else {
+                // Full cleanup on logout
                 currentUser = null;
                 document.getElementById('auth-section').style.display = 'block';
                 document.getElementById('app-section').style.display = 'none';
@@ -167,7 +165,7 @@
             }
         });
 
-        // Improved Sign Up - prevents duplicate emails
+        // Improved Sign Up
         document.getElementById('signup-btn').addEventListener('click', () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
@@ -183,13 +181,11 @@
             messageEl.style.color = "#3498db";
 
             auth.createUserWithEmailAndPassword(email, password)
-                .then(() => {
-                    messageEl.textContent = "";
-                })
+                .then(() => messageEl.textContent = "")
                 .catch(error => {
                     if (error.code === 'auth/email-already-in-use') {
                         messageEl.textContent = "This email is already registered. Please log in instead.";
-                        messageEl.style.color = "#e67e22";  // Orange - informative
+                        messageEl.style.color = "#e67e22";
                     } else if (error.code === 'auth/weak-password') {
                         messageEl.textContent = "Password should be at least 6 characters";
                         messageEl.style.color = "red";
@@ -228,13 +224,16 @@
         // Log Out
         document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
 
-        // Load Loans
+        // Load Loans - bulletproof listener management
         function loadLoans() {
             if (!currentUser) return;
 
             const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
 
-            if (unsubscribeLoans) unsubscribeLoans();
+            // Always unsubscribe previous listener first
+            if (unsubscribeLoans) {
+                unsubscribeLoans();
+            }
 
             unsubscribeLoans = loansRef.onSnapshot(snapshot => {
                 const list = document.getElementById('loans-list');
@@ -308,7 +307,7 @@
             URL.revokeObjectURL(url);
         });
 
-        // Add New Loan
+        // Add Loan
         document.getElementById('loan-form').addEventListener('submit', e => {
             e.preventDefault();
             if (!currentUser) return;
