@@ -33,6 +33,9 @@
                 <p>Total Lent: $<span id="total-lent">0.00</span></p>
                 <p>Outstanding: $<span id="outstanding">0.00</span></p>
                 <button id="export-btn" style="margin-top: 15px; background: #27ae60;">Export Loans to CSV</button>
+                <div style="text-align: center; margin: 20px 0;">
+    <button id="notify-toggle" style="background: #9b59b6; padding: 10px 20px;">Enable Due Date Reminders</button>
+    <p id="notify-status" style="margin-top: 10px; font-style: italic;"></p>
             </div>
 
             <h2>Add New Loan</h2>
@@ -121,7 +124,9 @@
         });
 
         // Load loans in real time
-      function loadLoans() {
+      function loadLoans() 
+      updateNotificationStatus();
+      {
     const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
     unsubscribeLoans = loansRef.onSnapshot(snapshot => {
         const list = document.getElementById('loans-list');
@@ -212,6 +217,89 @@ document.getElementById('export-btn').addEventListener('click', () => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);  // Clean up
 });
+// === DUE DATE REMINDERS WITH BROWSER NOTIFICATIONS ===
+const notifyStatus = document.getElementById('notify-status');
+const notifyToggle = document.getElementById('notify-toggle');
+
+let notificationInterval = null;
+
+// Check if notifications are supported and permitted
+function updateNotificationStatus() {
+    if (!("Notification" in window)) {
+        notifyStatus.textContent = "Notifications not supported in this browser.";
+        notifyToggle.style.display = 'none';
+        return;
+    }
+
+    if (Notification.permission === "granted") {
+        notifyStatus.textContent = "✅ Reminders enabled";
+        notifyToggle.textContent = "Disable Reminders";
+        startDailyCheck();
+    } else if (Notification.permission === "denied") {
+        notifyStatus.textContent = "❌ Notifications blocked. Enable in browser settings.";
+        notifyToggle.style.display = 'none';
+    } else {
+        notifyStatus.textContent = "Click button to enable reminders";
+        notifyToggle.textContent = "Enable Due Date Reminders";
+    }
+}
+
+// Toggle button
+notifyToggle.addEventListener('click', () => {
+    if (Notification.permission === "granted") {
+        // Disable
+        if (notificationInterval) clearInterval(notificationInterval);
+        notifyStatus.textContent = "Reminders disabled";
+        notifyToggle.textContent = "Enable Due Date Reminders";
+    } else {
+        Notification.requestPermission().then(permission => {
+            updateNotificationStatus();
+        });
+    }
+});
+
+// Send notification
+function sendNotification(title, body) {
+    if (Notification.permission === "granted") {
+        new Notification(title, { body, icon: 'https://via.placeholder.com/64?text=💰' });
+    }
+}
+
+// Check for due/overdue loans
+function checkDueLoans() {
+    if (currentLoans.length === 0) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    let hasDue = false;
+
+    currentLoans.forEach(loan => {
+        if (!loan.paid) {
+            if (loan.dueDate === today) {
+                sendNotification("Loan Due Today!", `${loan.borrower} owes you $${loan.amount.toFixed(2)}`);
+                hasDue = true;
+            } else if (loan.dueDate < today) {
+                sendNotification("Overdue Loan!", `${loan.borrower} owes you $${loan.amount.toFixed(2)} (due ${loan.dueDate})`);
+                hasDue = true;
+            }
+        }
+    });
+
+    if (hasDue) {
+        console.log("Reminder notifications sent");
+    }
+}
+
+// Start checking every hour (adjustable)
+function startDailyCheck() {
+    if (notificationInterval) clearInterval(notificationInterval);
+    checkDueLoans(); // Immediate check
+    notificationInterval = setInterval(checkDueLoans, 60 * 60 * 1000); // Every hour
+}
+
+// Initialize on login
+if (currentUser) updateNotificationStatus(); // In case already granted
+
+// Also call when user logs in (add inside auth.onAuthStateChanged after loadLoans())
         
     </script>
 </body>
