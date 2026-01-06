@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Lending Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="auth-section">
+            <h1>Personal Lending Tracker</h1>
+            <h2>Sign Up / Log In</h2>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button id="signup-btn">Sign Up</button>
+            <button id="login-btn">Log In</button>
+            <p id="auth-message"></p>
+            <button id="logout-btn" style="display:none;">Log Out</button>
+        </div>
+
+        <!-- App Section (hidden until logged in) -->
+        <div id="app-section" style="display:none;">
+            <h1>Personal Lending Tracker</h1>
+            <p>Welcome, <span id="user-email"></span></p>
+            <div class="summary">
+                <p>Total Lent: <span id="total-lent">0</span></p>
+                <p>Total Outstanding: <span id="outstanding">0</span></p>
+            </div>
+
+            <h2>Add New Loan</h2>
+            <form id="loan-form">
+                <input type="text" id="borrower" placeholder="Borrower Name" required>
+                <input type="number" id="amount" placeholder="Amount" required>
+                <input type="date" id="due-date" required>
+                <textarea id="notes" placeholder="Notes (optional)"></textarea>
+                <button type="submit">Add Loan</button>
+            </form>
+
+            <h2>Your Loans</h2>
+            <ul id="loans-list"></ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
