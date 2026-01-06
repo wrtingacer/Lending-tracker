@@ -6,88 +6,12 @@
     <title>Personal Lending Tracker</title>
     <link rel="stylesheet" href="style.css">
 
-    <!-- Firebase Compat SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase Modular SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, push, set, remove } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
-    <style>
-        /* Improved button sizes for Mark Paid & Delete */
-        .action-btn {
-            padding: 6px 12px;
-            font-size: 0.85em;
-            margin: 0 4px;
-        }
-        .paid-btn {
-            background: #27ae60;
-            color: white;
-        }
-        .delete-btn {
-            background: #e74c3c;
-            color: white;
-        }
-        .installment-list {
-            font-size: 0.85em;
-            color: #555;
-            margin-top: 8px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Authentication Section -->
-        <div id="auth-section">
-            <h1>Personal Lending Tracker</h1>
-            <p>Sign up or log in to manage your loans</p>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Password (6+ characters)" required>
-            <button id="signup-btn">Sign Up</button>
-            <button id="login-btn">Log In</button>
-            <p id="auth-message" style="color: red; margin-top: 15px; min-height: 20px;"></p>
-        </div>
-
-        <!-- Main App Section -->
-        <div id="app-section" style="display: none;">
-            <h1>Personal Lending Tracker</h1>
-            <p>
-                Welcome, <strong id="user-email"></strong> |
-                <button id="save-btn" style="background: #f39c12; color: white; padding: 8px 16px; border: none; border-radius: 4px;">Save Changes</button>
-                <button id="logout-btn">Log Out</button>
-            </p>
-
-            <!-- Customizable Reminders -->
-            <div style="text-align: center; margin: 20px 0;">
-                <label>
-                    Remind me 
-                    <input type="number" id="remind-days" value="1" min="0" max="30" style="width: 60px; padding: 6px;">
-                    days before due date
-                </label>
-                <br><br>
-                <button id="notify-toggle" style="background: #9b59b6; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer;">Enable Due Date Reminders</button>
-                <p id="notify-status" style="margin-top: 10px; font-style: italic; color: #7f8c8d;"></p>
-            </div>
-
-            <div class="summary">
-                <p>Total Lent: $<span id="total-lent">0.00</span></p>
-                <p>Total Outstanding: $<span id="outstanding">0.00</span></p>
-                <button id="export-btn" style="margin-top: 15px; background: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;">Export Loans to CSV</button>
-            </div>
-
-            <h2>Add New Loan</h2>
-            <form id="loan-form">
-                <input type="text" id="borrower" placeholder="Borrower Name" required>
-                <input type="number" id="amount" step="0.01" placeholder="Full Amount Borrowed" required>
-                <input type="date" id="due-date" required>
-                <textarea id="notes" placeholder="Description / Notes (optional)" rows="3"></textarea>
-                <button type="submit">Add Loan</button>
-            </form>
-
-            <h2>Your Loans</h2>
-            <ul id="loans-list"></ul>
-        </div>
-    </div>
-
-    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBsHw8C5h6nPunSbvR5ssWHdGzPCM8qcNI",
             authDomain: "lending-tracker-2ded9.firebaseapp.com",
@@ -99,24 +23,26 @@
             measurementId: "G-HQVVP0JT52"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
 
         let currentUser = null;
-        let unsubscribeLoans = null;
+        let loansRef = null;
+        let loansUnsubscribe = null;
         let currentLoans = [];
 
-        auth.onAuthStateChanged(user => {
+        onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('auth-section').style.display = 'none';
                 document.getElementById('app-section').style.display = 'block';
                 document.getElementById('user-email').textContent = user.email;
 
+                loansRef = ref(db, 'users/' + user.uid + '/loans');
                 loadLoans();
 
-                // Reminders with customizable days
+                // Reminders (customizable days)
                 const remindDaysInput = document.getElementById('remind-days');
                 const notifyStatus = document.getElementById('notify-status');
                 const notifyToggle = document.getElementById('notify-toggle');
@@ -136,25 +62,20 @@
                         const dueDate = new Date(loan.dueDate);
                         const daysUntilDue = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24));
 
-                        if (daysUntilDue === 0) {
-                            sendNotification("Due TODAY", `${loan.borrower} owes $${loan.remaining.toFixed(2)}`);
-                        } else if (daysUntilDue > 0 && daysUntilDue <= remindDays) {
-                            sendNotification("Upcoming Due", `${loan.borrower} owes $${loan.remaining.toFixed(2)} in ${daysUntilDue} day${daysUntilDue > 1 ? 's' : ''}`);
-                        } else if (daysUntilDue < 0) {
-                            sendNotification("OVERDUE", `${loan.borrower} is overdue by ${-daysUntilDue} day${-daysUntilDue > 1 ? 's' : ''} ($${loan.remaining.toFixed(2)})`);
+                        let message = '';
+                        if (daysUntilDue === 0) message = `Due TODAY: ${loan.borrower} owes $${loan.amount.toFixed(2)}`;
+                        else if (daysUntilDue > 0 && daysUntilDue <= remindDays) message = `Upcoming: ${loan.borrower} owes $${loan.amount.toFixed(2)} in ${daysUntilDue} day${daysUntilDue > 1 ? 's' : ''}`;
+                        else if (daysUntilDue < 0) message = `OVERDUE: ${loan.borrower} owes $${loan.amount.toFixed(2)}`;
+
+                        if (message && Notification.permission === "granted") {
+                            new Notification("Loan Reminder 💰", { body: message });
                         }
                     });
                 }
 
-                function sendNotification(title, body) {
-                    if (Notification.permission === "granted") {
-                        new Notification("Loan Reminder 💰", { body });
-                    }
-                }
-
                 function startChecking() {
                     checkDueLoans();
-                    notificationInterval = setInterval(checkDueLoans, 3600000); // hourly
+                    notificationInterval = setInterval(checkDueLoans, 3600000);
                 }
 
                 function stopChecking() {
@@ -165,18 +86,15 @@
                     notifyStatus.textContent = "✅ Reminders active";
                     notifyToggle.textContent = "Disable Reminders";
                     startChecking();
-                } else if (Notification.permission === "denied") {
-                    notifyStatus.textContent = "❌ Blocked in browser settings";
-                    notifyToggle.disabled = true;
                 } else {
                     notifyStatus.textContent = "Click to enable reminders";
                 }
 
-                notifyToggle.addEventListener('click', () => {
+                notifyToggle.onclick = () => {
                     if (Notification.permission === "granted") {
                         stopChecking();
                         notifyStatus.textContent = "Reminders disabled";
-                        notifyToggle.textContent = "Enable Due Date Reminders";
+                        notifyToggle.textContent = "Enable Reminders";
                     } else {
                         Notification.requestPermission().then(perm => {
                             if (perm === "granted") {
@@ -186,11 +104,9 @@
                             }
                         });
                     }
-                });
+                };
 
-                remindDaysInput.addEventListener('change', () => {
-                    if (Notification.permission === "granted") checkDueLoans();
-                });
+                remindDaysInput.onchange = () => checkDueLoans();
             } else {
                 currentUser = null;
                 document.getElementById('auth-section').style.display = 'block';
@@ -200,68 +116,52 @@
                 document.getElementById('total-lent').textContent = '0.00';
                 document.getElementById('outstanding').textContent = '0.00';
 
-                if (unsubscribeLoans) {
-                    unsubscribeLoans();
-                    unsubscribeLoans = null;
-                }
+                if (loansUnsubscribe) loansUnsubscribe();
                 currentLoans = [];
             }
         });
 
-        // Sign Up & Log In (same as before)
-        document.getElementById('signup-btn').addEventListener('click', () => {
+        // Sign Up
+        document.getElementById('signup-btn').onclick = () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const messageEl = document.getElementById('auth-message');
+            const msg = document.getElementById('auth-message');
             if (!email || !password) return;
-            messageEl.textContent = "Creating account...";
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(() => messageEl.textContent = "")
-                .catch(error => {
-                    if (error.code === 'auth/email-already-in-use') {
-                        messageEl.textContent = "This email is already registered. Please log in instead.";
-                        messageEl.style.color = "#e67e22";
+            msg.textContent = "Creating account...";
+            createUserWithEmailAndPassword(auth, email, password)
+                .catch(err => {
+                    if (err.code === 'auth/email-already-in-use') {
+                        msg.textContent = "Email already registered. Log in instead.";
+                        msg.style.color = "#e67e22";
                     } else {
-                        messageEl.textContent = error.message;
-                        messageEl.style.color = "red";
+                        msg.textContent = err.message;
+                        msg.style.color = "red";
                     }
                 });
-        });
+        };
 
-        document.getElementById('login-btn').addEventListener('click', () => {
+        // Log In
+        document.getElementById('login-btn').onclick = () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const messageEl = document.getElementById('auth-message');
+            const msg = document.getElementById('auth-message');
             if (!email || !password) return;
-            messageEl.textContent = "Logging in...";
-            auth.signInWithEmailAndPassword(email, password)
+            msg.textContent = "Logging in...";
+            signInWithEmailAndPassword(auth, email, password)
                 .catch(err => {
-                    messageEl.textContent = err.message;
-                    messageEl.style.color = "red";
+                    msg.textContent = err.message;
+                    msg.style.color = "red";
                 });
-        });
-
-        // Save Changes Button
-        document.getElementById('save-btn').addEventListener('click', () => {
-            alert("All changes are automatically saved! (Real-time sync with cloud)");
-        });
+        };
 
         // Log Out
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            if (confirm("Are you sure you want to log out? Changes are saved automatically.")) {
-                auth.signOut();
-            }
-        });
+        document.getElementById('logout-btn').onclick = () => signOut(auth);
 
-        // Load Loans with installment support
+        // Load Loans
         function loadLoans() {
-            if (!currentUser) return;
+            if (loansUnsubscribe) loansUnsubscribe();
 
-            const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
-
-            if (unsubscribeLoans) unsubscribeLoans();
-
-            unsubscribeLoans = loansRef.onSnapshot(snapshot => {
+            loansUnsubscribe = onValue(loansRef, (snapshot) => {
                 const list = document.getElementById('loans-list');
                 list.innerHTML = '';
                 let totalLent = 0;
@@ -270,49 +170,34 @@
 
                 currentLoans = [];
 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const loan = {
-                        id: doc.id,
-                        borrower: data.borrower,
-                        originalAmount: data.originalAmount || data.amount,  // backward compatibility
-                        paidAmount: data.paidAmount || 0,
-                        remaining: (data.originalAmount || data.amount) - (data.paidAmount || 0),
-                        dueDate: data.dueDate,
-                        notes: data.notes || '',
-                        installments: data.installments || [],
-                        paid: data.paid || false
-                    };
-
+                snapshot.forEach(child => {
+                    const loan = child.val();
+                    loan.id = child.key;
                     currentLoans.push(loan);
-                    totalLent += loan.originalAmount;
-                    outstanding += loan.remaining;
+
+                    totalLent += loan.amount;
+                    if (!loan.paid) outstanding += loan.amount;
 
                     const li = document.createElement('li');
-                    if (loan.dueDate < today && loan.remaining > 0) li.classList.add('overdue');
-
-                    let installmentHtml = '';
-                    if (loan.installments.length > 0) {
-                        installmentHtml = '<div class="installment-list"><strong>Payments:</strong><ul>';
-                        loan.installments.forEach(inst => {
-                            installmentHtml += `<li>${inst.date}: $${inst.amount.toFixed(2)}</li>`;
-                        });
-                        installmentHtml += '</ul></div>';
-                    }
+                    if (loan.dueDate < today && !loan.paid) li.classList.add('overdue');
 
                     li.innerHTML = `
-                        <strong>${loan.borrower}</strong><br>
-                        Original: $${loan.originalAmount.toFixed(2)} | 
-                        Paid: $${loan.paidAmount.toFixed(2)} | 
-                        <strong>Due: $${loan.remaining.toFixed(2)}</strong><br>
-                        Due Date: ${loan.dueDate}<br>
-                        <em>${loan.notes || 'No description'}</em>
-                        ${installmentHtml}
+                        <strong>${loan.borrower}</strong> - $${loan.amount.toFixed(2)}
+                        <br>Due: ${loan.dueDate} ${loan.paid ? '<span style="color:green;">(Paid)</span>' : ''}
+                        <br><em>${loan.notes || 'No notes'}</em>
                         <div style="margin-top:10px;">
-                            <button class="action-btn paid-btn" onclick="recordPayment('${loan.id}', ${loan.originalAmount})">Record Payment</button>
-                            <button class="action-btn delete-btn" onclick="deleteLoan('${loan.id}')">Delete</button>
+                            <button class="paid-btn">${loan.paid ? 'Mark Unpaid' : 'Mark Paid'}</button>
+                            <button class="delete-btn">Delete</button>
                         </div>
                     `;
+
+                    li.querySelector('.paid-btn').onclick = () => {
+                        set(ref(db, 'users/' + currentUser.uid + '/loans/' + loan.id + '/paid'), !loan.paid);
+                    };
+
+                    li.querySelector('.delete-btn').onclick = () => {
+                        if (confirm('Delete this loan?')) remove(ref(db, 'users/' + currentUser.uid + '/loans/' + loan.id));
+                    };
 
                     list.appendChild(li);
                 });
@@ -322,84 +207,41 @@
             });
         }
 
-        // Record Payment (Installment)
-        window.recordPayment = function(loanId, originalAmount) {
-            const amount = prompt("Enter payment amount:", "0.00");
-            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) return;
-
-            const paidAmt = parseFloat(amount);
-            const date = new Date().toISOString().split('T')[0];
-
-            const loanRef = db.collection('users').doc(currentUser.uid).collection('loans').doc(loanId);
-
-            db.runTransaction(async (transaction) => {
-                const doc = await transaction.get(loanRef);
-                const data = doc.data();
-                const currentPaid = data.paidAmount || 0;
-                const newPaid = currentPaid + paidAmt;
-                const installments = data.installments || [];
-
-                installments.push({ date, amount: paidAmt });
-
-                transaction.update(loanRef, {
-                    paidAmount: newPaid,
-                    installments: installments,
-                    paid: newPaid >= originalAmount
-                });
-            }).then(() => alert(`Payment of $${paidAmt.toFixed(2)} recorded!`));
-        };
-
-        window.deleteLoan = function(loanId) {
-            if (confirm('Delete this loan permanently?')) {
-                db.collection('users').doc(currentUser.uid).collection('loans').doc(loanId).delete();
-            }
-        };
-
-        // Export to CSV (updated for installments)
-        document.getElementById('export-btn').addEventListener('click', () => {
+        // Export CSV
+        document.getElementById('export-btn').onclick = () => {
             if (currentLoans.length === 0) {
-                alert('No loans to export yet!');
+                alert('No loans to export!');
                 return;
             }
 
-            let csv = 'Borrower,Original Amount,Paid Amount,Remaining Due,Due Date,Description,Status\n';
+            let csv = 'Borrower,Amount,Due Date,Notes,Status\n';
             currentLoans.forEach(loan => {
-                const status = loan.paid ? 'Fully Paid' : 'Partial/Unpaid';
-                csv += `"${loan.borrower}","${loan.originalAmount.toFixed(2)}","${loan.paidAmount.toFixed(2)}","${loan.remaining.toFixed(2)}","${loan.dueDate}","${(loan.notes || '').replace(/"/g, '""')}","${status}"\n`;
+                const status = loan.paid ? 'Paid' : 'Unpaid';
+                const notes = (loan.notes || '').replace(/"/g, '""');
+                csv += `"${loan.borrower}","${loan.amount.toFixed(2)}","${loan.dueDate}","${notes}","${status}"\n`;
             });
 
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `my-loans-${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `my-loans-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
             URL.revokeObjectURL(url);
-        });
+        };
 
-        // Add New Loan
-        document.getElementById('loan-form').addEventListener('submit', e => {
+        // Add Loan
+        document.getElementById('loan-form').onsubmit = (e) => {
             e.preventDefault();
-            if (!currentUser) return;
-
-            const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
-            const originalAmount = parseFloat(document.getElementById('amount').value);
-
-            const loan = {
+            const newLoanRef = push(loansRef);
+            set(newLoanRef, {
                 borrower: document.getElementById('borrower').value.trim(),
-                originalAmount: originalAmount,
-                paidAmount: 0,
+                amount: parseFloat(document.getElementById('amount').value),
                 dueDate: document.getElementById('due-date').value,
                 notes: document.getElementById('notes').value.trim(),
-                installments: [],
                 paid: false
-            };
-
-            loansRef.add(loan).then(() => e.target.reset());
-        });
+            }).then(() => e.target.reset());
+        };
     </script>
 </body>
 </html>
