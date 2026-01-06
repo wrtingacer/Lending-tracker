@@ -82,9 +82,9 @@
                 document.getElementById('app-section').style.display = 'block';
                 document.getElementById('user-email').textContent = user.email;
 
-                loadLoans();  // Fresh load every time
+                loadLoans();  // Now guarantees immediate load
 
-                // Reminders setup
+                // Reminders setup (unchanged)
                 const notifyStatus = document.getElementById('notify-status');
                 const notifyToggle = document.getElementById('notify-toggle');
                 let notificationInterval = null;
@@ -147,7 +147,6 @@
                     }
                 });
             } else {
-                // Full cleanup on logout
                 currentUser = null;
                 document.getElementById('auth-section').style.display = 'block';
                 document.getElementById('app-section').style.display = 'none';
@@ -165,7 +164,7 @@
             }
         });
 
-        // Improved Sign Up
+        // Sign Up (with duplicate prevention)
         document.getElementById('signup-btn').addEventListener('click', () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
@@ -224,61 +223,73 @@
         // Log Out
         document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
 
-        // Load Loans - bulletproof listener management
+        // Load Loans - FIXED with initial fetch + real-time listener
         function loadLoans() {
             if (!currentUser) return;
 
             const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
 
-            // Always unsubscribe previous listener first
+            // Clean up any old listener
             if (unsubscribeLoans) {
                 unsubscribeLoans();
             }
 
+            // Initial fetch to load immediately
+            loansRef.get().then(snapshot => {
+                renderLoans(snapshot);
+            });
+
+            // Then set real-time listener for updates
             unsubscribeLoans = loansRef.onSnapshot(snapshot => {
-                const list = document.getElementById('loans-list');
-                list.innerHTML = '';
-                let totalLent = 0;
-                let outstanding = 0;
-                const today = new Date().toISOString().split('T')[0];
+                renderLoans(snapshot);
+            });
+        }
 
-                currentLoans = [];
+        // Shared render function
+        function renderLoans(snapshot) {
+            const list = document.getElementById('loans-list');
+            list.innerHTML = '';
+            let totalLent = 0;
+            let outstanding = 0;
+            const today = new Date().toISOString().split('T')[0];
 
-                snapshot.forEach(doc => {
-                    const loan = doc.data();
-                    loan.id = doc.id;
-                    currentLoans.push(loan);
+            currentLoans = [];
 
-                    totalLent += loan.amount;
-                    if (!loan.paid) outstanding += loan.amount;
+            snapshot.forEach(doc => {
+                const loan = doc.data();
+                loan.id = doc.id;
+                currentLoans.push(loan);
 
-                    const li = document.createElement('li');
-                    if (loan.dueDate < today && !loan.paid) li.classList.add('overdue');
+                totalLent += loan.amount;
+                if (!loan.paid) outstanding += loan.amount;
 
-                    li.innerHTML = `
-                        <strong>${loan.borrower}</strong> - $${loan.amount.toFixed(2)}
-                        <br>Due: ${loan.dueDate} ${loan.paid ? '<span style="color:green;">(Paid)</span>' : ''}
-                        <br><em>${loan.notes || 'No notes'}</em>
-                        <div style="margin-top:10px;">
-                            <button class="paid-btn">${loan.paid ? 'Mark Unpaid' : 'Mark Paid'}</button>
-                            <button class="delete-btn">Delete</button>
-                        </div>
-                    `;
+                const li = document.createElement('li');
+                if (loan.dueDate < today && !loan.paid) li.classList.add('overdue');
 
-                    li.querySelector('.paid-btn').addEventListener('click', () => {
-                        loansRef.doc(loan.id).update({ paid: !loan.paid });
-                    });
+                li.innerHTML = `
+                    <strong>${loan.borrower}</strong> - $${loan.amount.toFixed(2)}
+                    <br>Due: ${loan.dueDate} ${loan.paid ? '<span style="color:green;">(Paid)</span>' : ''}
+                    <br><em>${loan.notes || 'No notes'}</em>
+                    <div style="margin-top:10px;">
+                        <button class="paid-btn">${loan.paid ? 'Mark Unpaid' : 'Mark Paid'}</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                `;
 
-                    li.querySelector('.delete-btn').addEventListener('click', () => {
-                        if (confirm('Delete this loan?')) loansRef.doc(loan.id).delete();
-                    });
-
-                    list.appendChild(li);
+                const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
+                li.querySelector('.paid-btn').addEventListener('click', () => {
+                    loansRef.doc(loan.id).update({ paid: !loan.paid });
                 });
 
-                document.getElementById('total-lent').textContent = totalLent.toFixed(2);
-                document.getElementById('outstanding').textContent = outstanding.toFixed(2);
+                li.querySelector('.delete-btn').addEventListener('click', () => {
+                    if (confirm('Delete this loan?')) loansRef.doc(loan.id).delete();
+                });
+
+                list.appendChild(li);
             });
+
+            document.getElementById('total-lent').textContent = totalLent.toFixed(2);
+            document.getElementById('outstanding').textContent = outstanding.toFixed(2);
         }
 
         // Export to CSV
@@ -307,7 +318,7 @@
             URL.revokeObjectURL(url);
         });
 
-        // Add Loan
+        // Add New Loan
         document.getElementById('loan-form').addEventListener('submit', e => {
             e.preventDefault();
             if (!currentUser) return;
