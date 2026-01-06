@@ -21,7 +21,7 @@
             <input type="password" id="password" placeholder="Password (6+ characters)" required>
             <button id="signup-btn">Sign Up</button>
             <button id="login-btn">Log In</button>
-            <p id="auth-message" style="color: red; margin-top: 15px;"></p>
+            <p id="auth-message" style="color: red; margin-top: 15px; min-height: 20px;"></p>
         </div>
 
         <!-- Main App Section (hidden until logged in) -->
@@ -74,7 +74,7 @@
 
         let currentUser = null;
         let unsubscribeLoans = null;
-        let currentLoans = [];  // Cache for export and reminders
+        let currentLoans = [];
 
         // Auth State Listener
         auth.onAuthStateChanged(user => {
@@ -83,9 +83,10 @@
                 document.getElementById('auth-section').style.display = 'none';
                 document.getElementById('app-section').style.display = 'block';
                 document.getElementById('user-email').textContent = user.email;
+
                 loadLoans();
 
-                // === REMINDERS SETUP (only after login) ===
+                // === REMINDERS SETUP ===
                 const notifyStatus = document.getElementById('notify-status');
                 const notifyToggle = document.getElementById('notify-toggle');
                 let notificationInterval = null;
@@ -99,7 +100,7 @@
                     if (currentLoans.length === 0) return;
                     const today = new Date().toISOString().split('T')[0];
                     currentLoans.forEach(loan => {
-                        if (!loan.paid && (loan.dueDate <= today)) {
+                        if (!loan.paid && loan.dueDate <= today) {
                             const message = loan.dueDate === today 
                                 ? `Due TODAY: ${loan.borrower} owes $${loan.amount.toFixed(2)}`
                                 : `OVERDUE: ${loan.borrower} owes $${loan.amount.toFixed(2)} (due ${loan.dueDate})`;
@@ -112,14 +113,13 @@
 
                 function startChecking() {
                     checkDueLoans();
-                    notificationInterval = setInterval(checkDueLoans, 3600000); // Every hour
+                    notificationInterval = setInterval(checkDueLoans, 3600000);
                 }
 
                 function stopChecking() {
                     if (notificationInterval) clearInterval(notificationInterval);
                 }
 
-                // Initial status
                 if (!("Notification" in window)) {
                     updateStatus("Notifications not supported", "Reminders Unavailable");
                     notifyToggle.disabled = true;
@@ -149,36 +149,80 @@
                     }
                 });
                 // === END REMINDERS ===
-                       } else {
+            } else {
                 currentUser = null;
                 document.getElementById('auth-section').style.display = 'block';
                 document.getElementById('app-section').style.display = 'none';
                 document.getElementById('auth-message').textContent = '';
-                document.getElementById('loans-list').innerHTML = '';  // Clear visible loans
+                document.getElementById('loans-list').innerHTML = '';
+                document.getElementById('total-lent').textContent = '0.00';
+                document.getElementById('outstanding').textContent = '0.00';
+
                 if (unsubscribeLoans) {
                     unsubscribeLoans();
-                    unsubscribeLoans = null;  // Critical fix
+                    unsubscribeLoans = null;
                 }
-                currentLoans = [];  // Clear cache
+
+                currentLoans = [];
             }
         });
 
-        // Sign Up
+        // Improved Sign Up - prevents duplicate emails
         document.getElementById('signup-btn').addEventListener('click', () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            if (!email || !password) return;
+            const messageEl = document.getElementById('auth-message');
+
+            if (!email || !password) {
+                messageEl.textContent = "Please enter both email and password";
+                messageEl.style.color = "red";
+                return;
+            }
+
+            messageEl.textContent = "Creating account...";
+            messageEl.style.color = "#3498db";
+
             auth.createUserWithEmailAndPassword(email, password)
-                .catch(err => document.getElementById('auth-message').textContent = err.message);
+                .then(() => {
+                    messageEl.textContent = "";
+                })
+                .catch(error => {
+                    if (error.code === 'auth/email-already-in-use') {
+                        messageEl.textContent = "This email is already registered. Please log in instead.";
+                        messageEl.style.color = "#e67e22";  // Orange - informative
+                    } else if (error.code === 'auth/weak-password') {
+                        messageEl.textContent = "Password should be at least 6 characters";
+                        messageEl.style.color = "red";
+                    } else if (error.code === 'auth/invalid-email') {
+                        messageEl.textContent = "Please enter a valid email address";
+                        messageEl.style.color = "red";
+                    } else {
+                        messageEl.textContent = error.message;
+                        messageEl.style.color = "red";
+                    }
+                });
         });
 
         // Log In
         document.getElementById('login-btn').addEventListener('click', () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            if (!email || !password) return;
+            const messageEl = document.getElementById('auth-message');
+
+            if (!email || !password) {
+                messageEl.textContent = "Please enter both email and password";
+                messageEl.style.color = "red";
+                return;
+            }
+
+            messageEl.textContent = "Logging in...";
+            messageEl.style.color = "#3498db";
+
             auth.signInWithEmailAndPassword(email, password)
-                .catch(err => document.getElementById('auth-message').textContent = err.message);
+                .catch(err => {
+                    messageEl.textContent = err.message;
+                    messageEl.style.color = "red";
+                });
         });
 
         // Log Out
@@ -186,7 +230,12 @@
 
         // Load Loans
         function loadLoans() {
+            if (!currentUser) return;
+
             const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
+
+            if (unsubscribeLoans) unsubscribeLoans();
+
             unsubscribeLoans = loansRef.onSnapshot(snapshot => {
                 const list = document.getElementById('loans-list');
                 list.innerHTML = '';
@@ -194,7 +243,7 @@
                 let outstanding = 0;
                 const today = new Date().toISOString().split('T')[0];
 
-                currentLoans = []; // Reset cache
+                currentLoans = [];
 
                 snapshot.forEach(doc => {
                     const loan = doc.data();
@@ -259,9 +308,11 @@
             URL.revokeObjectURL(url);
         });
 
-        // Add Loan
+        // Add New Loan
         document.getElementById('loan-form').addEventListener('submit', e => {
             e.preventDefault();
+            if (!currentUser) return;
+
             const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
             const loan = {
                 borrower: document.getElementById('borrower').value.trim(),
