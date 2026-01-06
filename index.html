@@ -68,6 +68,7 @@
 
         let currentUser = null;
         let unsubscribeLoans = null;
+        let currentLoans = [];  // We'll store all loans here in real-time
 
         // Listen for login state
         auth.onAuthStateChanged(user => {
@@ -120,51 +121,55 @@
         });
 
         // Load loans in real time
-        function loadLoans() {
-            const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
-            unsubscribeLoans = loansRef.onSnapshot(snapshot => {
-                const list = document.getElementById('loans-list');
-                list.innerHTML = '';
-                let totalLent = 0;
-                let outstanding = 0;
-                const today = new Date().toISOString().split('T')[0];
+      function loadLoans() {
+    const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
+    unsubscribeLoans = loansRef.onSnapshot(snapshot => {
+        const list = document.getElementById('loans-list');
+        list.innerHTML = '';
+        let totalLent = 0;
+        let outstanding = 0;
+        const today = new Date().toISOString().split('T')[0];
 
-                snapshot.forEach(doc => {
-                    const loan = doc.data();
-                    loan.id = doc.id;
-                    totalLent += loan.amount;
-                    if (!loan.paid) outstanding += loan.amount;
+        currentLoans = [];  // Reset array
 
-                    const li = document.createElement('li');
-                    if (loan.dueDate < today && !loan.paid) li.classList.add('overdue');
+        snapshot.forEach(doc => {
+            const loan = doc.data();
+            loan.id = doc.id;
+            currentLoans.push(loan);  // Save to global array
 
-                    li.innerHTML = `
-                        <strong>${loan.borrower}</strong> - $${loan.amount.toFixed(2)}
-                        <br>Due: ${loan.dueDate} ${loan.paid ? '<span style="color:green;">(Paid)</span>' : ''}
-                        <br><em>${loan.notes || 'No notes'}</em>
-                        <div style="margin-top:10px;">
-                            <button class="paid-btn">${loan.paid ? 'Mark Unpaid' : 'Mark Paid'}</button>
-                            <button class="delete-btn">Delete</button>
-                        </div>
-                    `;
+            totalLent += loan.amount;
+            if (!loan.paid) outstanding += loan.amount;
 
-                    li.querySelector('.paid-btn').addEventListener('click', () => {
-                        loansRef.doc(loan.id).update({ paid: !loan.paid });
-                    });
+            const li = document.createElement('li');
+            if (loan.dueDate < today && !loan.paid) li.classList.add('overdue');
 
-                    li.querySelector('.delete-btn').addEventListener('click', () => {
-                        if (confirm('Delete this loan?')) {
-                            loansRef.doc(loan.id).delete();
-                        }
-                    });
+            li.innerHTML = `
+                <strong>${loan.borrower}</strong> - $${loan.amount.toFixed(2)}
+                <br>Due: ${loan.dueDate} ${loan.paid ? '<span style="color:green;">(Paid)</span>' : ''}
+                <br><em>${loan.notes || 'No notes'}</em>
+                <div style="margin-top:10px;">
+                    <button class="paid-btn">${loan.paid ? 'Mark Unpaid' : 'Mark Paid'}</button>
+                    <button class="delete-btn">Delete</button>
+                </div>
+            `;
 
-                    list.appendChild(li);
-                });
-
-                document.getElementById('total-lent').textContent = totalLent.toFixed(2);
-                document.getElementById('outstanding').textContent = outstanding.toFixed(2);
+            li.querySelector('.paid-btn').addEventListener('click', () => {
+                loansRef.doc(loan.id).update({ paid: !loan.paid });
             });
-        }
+
+            li.querySelector('.delete-btn').addEventListener('click', () => {
+                if (confirm('Delete this loan?')) {
+                    loansRef.doc(loan.id).delete();
+                }
+            });
+
+            list.appendChild(li);
+        });
+
+        document.getElementById('total-lent').textContent = totalLent.toFixed(2);
+        document.getElementById('outstanding').textContent = outstanding.toFixed(2);
+    });
+}
 
         // Add new loan
         document.getElementById('loan-form').addEventListener('submit', e => {
@@ -182,27 +187,32 @@
             });
         });
 // Export to CSV function
+// Export to CSV - using cached currentLoans (best version)
 document.getElementById('export-btn').addEventListener('click', () => {
-    const loansRef = db.collection('users').doc(currentUser.uid).collection('loans');
-    loansRef.get().then((snapshot) => {
-        let csv = 'Borrower,Amount,Due Date,Notes,Status,Paid Date\n';
-        snapshot.forEach(doc => {
-            const loan = doc.data();
-            const status = loan.paid ? 'Paid' : 'Unpaid';
-            const paidDate = loan.paid ? new Date().toISOString().split('T')[0] : '';
-            csv += `"${loan.borrower}","${loan.amount}","${loan.dueDate}","${loan.notes || ''}","${status}","${paidDate}"\n`;
-        });
+    if (currentLoans.length === 0) {
+        alert('No loans to export yet! Add some loans first.');
+        return;
+    }
 
-        // Create download link
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `my-loans-${new Date().toISOString().split('T')[0]}.csv`;
-        a.click();
-        window.URL.revokeObjectURL(url);
+    let csv = 'Borrower,Amount,Due Date,Notes,Status\n';
+    currentLoans.forEach(loan => {
+        const status = loan.paid ? 'Paid' : 'Unpaid';
+        const notes = (loan.notes || '').replace(/"/g, '""');  // Properly escape quotes
+        csv += `"${loan.borrower}","${loan.amount.toFixed(2)}","${loan.dueDate}","${notes}","${status}"\n`;
     });
-});      
+
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });  // Added BOM for Excel compatibility
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `my-loans-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);  // Clean up
+});
+        
     </script>
 </body>
 </html>
