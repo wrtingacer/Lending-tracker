@@ -6,13 +6,12 @@
     <title>Personal Lending Tracker</title>
     <link rel="stylesheet" href="style.css">
 
-    <!-- Firebase Compat SDK (older style - works perfectly on GitHub Pages) -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase Modular SDK (v10+) via CDN -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 
-    <script>
-        // Your Firebase config (safe to keep here - explained below)
         const firebaseConfig = {
             apiKey: "AIzaSyBsHw8C5h6nPunSbvR5ssWHdGzPCM8qcNI",
             authDomain: "lending-tracker-2ded9.firebaseapp.com",
@@ -24,16 +23,15 @@
             measurementId: "G-HQVVP0JT52"
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         let currentUser = null;
         let unsubscribeLoans = null;
 
-        // Auth state listener
-        auth.onAuthStateChanged((user) => {
+        // Auth state change
+        onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('auth-section').style.display = 'none';
@@ -51,56 +49,61 @@
         });
 
         // Sign Up
-        document.getElementById('signup-btn').onclick = () => {
+        document.getElementById('signup-btn').addEventListener('click', () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             if (!email || !password) return;
-            auth.createUserWithEmailAndPassword(email, password)
+            createUserWithEmailAndPassword(auth, email, password)
                 .catch((error) => {
                     document.getElementById('auth-message').textContent = error.message;
                 });
-        };
+        });
 
         // Log In
-        document.getElementById('login-btn').onclick = () => {
+        document.getElementById('login-btn').addEventListener('click', () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             if (!email || !password) return;
-            auth.signInWithEmailAndPassword(email, password)
+            signInWithEmailAndPassword(auth, email, password)
                 .catch((error) => {
                     document.getElementById('auth-message').textContent = error.message;
                 });
-        };
+        });
 
         // Log Out
-        document.getElementById('logout-btn').onclick = () => auth.signOut();
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth);
+        });
 
-        // Get loans collection
+        // Get loans collection for current user
         function getLoansCollection() {
             if (!currentUser) return null;
-            return db.collection('users').doc(currentUser.uid).collection('loans');
+            return collection(db, 'users', currentUser.uid, 'loans');
         }
 
-        // Load loans real-time
+        // Load loans in real-time
         function loadLoans() {
             const loansCol = getLoansCollection();
             if (!loansCol) return;
 
-            unsubscribeLoans = loansCol.onSnapshot((snapshot) => {
+            unsubscribeLoans = onSnapshot(loansCol, (snapshot) => {
                 const list = document.getElementById('loans-list');
                 list.innerHTML = '';
                 let totalLent = 0;
                 let outstanding = 0;
-                const today = new Date().toISOString().split('T')[0];
+                const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
                 snapshot.forEach((docSnap) => {
                     const loan = docSnap.data();
                     loan.id = docSnap.id;
+
                     totalLent += loan.amount;
                     if (!loan.paid) outstanding += loan.amount;
 
                     const li = document.createElement('li');
-                    if (loan.dueDate < today && !loan.paid) li.classList.add('overdue');
+                    if (loan.dueDate < today && !loan.paid) {
+                        li.classList.add('overdue');
+                    }
 
                     li.innerHTML = `
                         <strong>${loan.borrower}</strong> - $${loan.amount.toFixed(2)}
@@ -112,8 +115,9 @@
                         </div>
                     `;
 
-                    li.querySelector('.paid-btn').onclick = () => togglePaid(loan.id, loan.paid);
-                    li.querySelector('.delete-btn').onclick = () => deleteLoan(loan.id);
+                    // Attach event listeners
+                    li.querySelector('.paid-btn').addEventListener('click', () => togglePaid(loan.id, loan.paid));
+                    li.querySelector('.delete-btn').addEventListener('click', () => deleteLoan(loan.id));
 
                     list.appendChild(li);
                 });
@@ -123,20 +127,22 @@
             });
         }
 
+        // Toggle paid status
         async function togglePaid(id, currentPaid) {
-            const loanRef = db.collection('users').doc(currentUser.uid).collection('loans').doc(id);
-            await loanRef.update({ paid: !currentPaid });
+            const loanRef = doc(db, 'users', currentUser.uid, 'loans', id);
+            await updateDoc(loanRef, { paid: !currentPaid });
         }
 
+        // Delete loan
         async function deleteLoan(id) {
             if (confirm('Delete this loan permanently?')) {
-                const loanRef = db.collection('users').doc(currentUser.uid).collection('loans').doc(id);
-                await loanRef.delete();
+                const loanRef = doc(db, 'users', currentUser.uid, 'loans', id);
+                await deleteDoc(loanRef);
             }
         }
 
-        // Add loan
-        document.getElementById('loan-form').onsubmit = async (e) => {
+        // Add new loan
+        document.getElementById('loan-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const loansCol = getLoansCollection();
             if (!loansCol) return;
@@ -149,9 +155,13 @@
                 paid: false
             };
 
-            await loansCol.add(loan);
-            e.target.reset();
-        };
+            try {
+                await addDoc(loansCol, loan);
+                e.target.reset();
+            } catch (error) {
+                alert('Error adding loan: ' + error.message);
+            }
+        });
     </script>
 </head>
 <body>
