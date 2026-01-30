@@ -29,27 +29,41 @@
             --border-color: #e0e0e0;
         }
 
+        body.dark-mode {
+            --primary-color: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary-color: #8b5cf6;
+            --text-dark: #e5e7eb;
+            --text-medium: #d1d5db;
+            --text-light: #9ca3af;
+            --bg-light: #1f2937;
+            --bg-card: #111827;
+            --border-color: #374151;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: all 0.3s;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
+            background: var(--bg-card);
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -57,8 +71,22 @@
             margin-bottom: 10px;
         }
 
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            font-size: 20px;
+        }
+
         .content {
             padding: 30px;
+            color: var(--text-dark);
         }
 
         #auth-section {
@@ -74,29 +102,23 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-dark);
         }
 
-        input[type="email"],
-        input[type="password"],
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        textarea,
-        select {
+        input, textarea, select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 14px;
             transition: border-color 0.3s;
+            background: var(--bg-card);
+            color: var(--text-dark);
         }
 
-        input:focus,
-        textarea:focus,
-        select:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary-color);
         }
 
         textarea {
@@ -115,7 +137,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             width: 100%;
             margin-bottom: 10px;
@@ -127,34 +149,34 @@
         }
 
         .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
+            background: var(--bg-light);
+            color: var(--text-dark);
         }
 
         .btn-secondary:hover {
-            background: #e0e0e0;
+            background: var(--border-color);
         }
 
         .btn-success {
-            background: #27ae60;
+            background: var(--success-color);
             color: white;
         }
 
         .btn-success:hover {
-            background: #229954;
+            background: var(--success-dark);
         }
 
         .btn-danger {
-            background: #e74c3c;
+            background: var(--danger-color);
             color: white;
         }
 
         .btn-danger:hover {
-            background: #c0392b;
+            background: var(--danger-dark);
         }
 
         .btn-info {
-            background: #3498db;
+            background: var(--info-color);
             color: white;
         }
 
@@ -176,13 +198,53 @@
         }
 
         .user-info {
-            background: #f8f9fa;
+            background: var(--bg-light);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filters-section {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 6px 12px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-tag:hover {
+            background: var(--primary-dark);
+        }
+
+        .filter-tag.active {
+            background: var(--success-color);
         }
 
         .stats {
@@ -193,7 +255,7 @@
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             padding: 20px;
             border-radius: 12px;
@@ -216,17 +278,55 @@
             font-weight: bold;
         }
 
-        .chart-container {
-            background: white;
+        .analytics-section {
+            background: var(--bg-card);
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 30px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-color);
+        }
+
+        .analytics-section h3 {
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .analytics-item {
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .analytics-item h4 {
+            font-size: 0.9em;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .analytics-item .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 2px solid var(--border-color);
         }
 
         .chart-container h3 {
             margin-bottom: 20px;
-            color: #333;
+            color: var(--text-dark);
         }
 
         .bar-chart {
@@ -237,37 +337,6 @@
             margin-top: 20px;
         }
 
-        .bar {
-            flex: 1;
-            margin: 0 5px;
-            background: linear-gradient(to top, #667eea, #764ba2);
-            border-radius: 8px 8px 0 0;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .bar:hover {
-            opacity: 0.8;
-        }
-
-        .bar-label {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 12px;
-            white-space: nowrap;
-        }
-
-        .bar-value {
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 12px;
-            font-weight: bold;
-        }
-
         .notification-section {
             background: #fff3cd;
             border: 2px solid #ffc107;
@@ -276,13 +345,22 @@
             margin-bottom: 20px;
         }
 
+        body.dark-mode .notification-section {
+            background: #854d0e;
+            border-color: #fbbf24;
+        }
+
         .notification-section h3 {
             margin-bottom: 10px;
             color: #856404;
         }
 
+        body.dark-mode .notification-section h3 {
+            color: #fef3c7;
+        }
+
         .form-section {
-            background: #f8f9fa;
+            background: var(--bg-light);
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 30px;
@@ -290,7 +368,7 @@
 
         .form-section h2 {
             margin-bottom: 20px;
-            color: #333;
+            color: var(--text-dark);
         }
 
         .form-row {
@@ -309,13 +387,37 @@
             width: auto;
         }
 
+        .quick-add-templates {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .template-btn {
+            padding: 8px 16px;
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-dark);
+            transition: all 0.3s;
+        }
+
+        .template-btn:hover {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
         #loans-list {
             list-style: none;
         }
 
         #loans-list li {
-            background: white;
-            border: 2px solid #e0e0e0;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
@@ -323,13 +425,17 @@
         }
 
         #loans-list li:hover {
-            border-color: #667eea;
+            border-color: var(--primary-color);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         #loans-list li.overdue {
-            border-color: #e74c3c;
+            border-color: var(--danger-color);
             background: #ffebee;
+        }
+
+        body.dark-mode #loans-list li.overdue {
+            background: #7f1d1d;
         }
 
         .loan-header {
@@ -338,7 +444,7 @@
             align-items: center;
             margin-bottom: 15px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid var(--bg-light);
         }
 
         .loan-info {
@@ -355,7 +461,7 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: #e0e0e0;
+            background: var(--border-color);
             border-radius: 4px;
             overflow: hidden;
             margin: 10px 0;
@@ -363,12 +469,12 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #27ae60, #229954);
+            background: linear-gradient(90deg, var(--success-color), var(--success-dark));
             transition: width 0.3s;
         }
 
         .payments-section {
-            background: #f8f9fa;
+            background: var(--bg-light);
             padding: 15px;
             border-radius: 8px;
             margin: 15px 0;
@@ -376,12 +482,12 @@
 
         .payments-section h4 {
             margin-bottom: 10px;
-            color: #333;
+            color: var(--text-dark);
             font-size: 14px;
         }
 
         .payment-item {
-            background: white;
+            background: var(--bg-card);
             padding: 10px;
             border-radius: 6px;
             margin-bottom: 8px;
@@ -392,16 +498,16 @@
         }
 
         .payment-item .date {
-            color: #7f8c8d;
+            color: var(--text-light);
         }
 
         .payment-item .amount {
             font-weight: bold;
-            color: #27ae60;
+            color: var(--success-color);
         }
 
         .payment-item .delete-payment {
-            background: #e74c3c;
+            background: var(--danger-color);
             color: white;
             border: none;
             padding: 4px 8px;
@@ -417,10 +523,18 @@
             margin: 15px 0;
         }
 
+        body.dark-mode .installments-section {
+            background: #1e3a8a;
+        }
+
         .installments-section h4 {
             margin-bottom: 10px;
             color: #1976d2;
             font-size: 14px;
+        }
+
+        body.dark-mode .installments-section h4 {
+            color: #93c5fd;
         }
 
         .installment-item {
@@ -434,12 +548,21 @@
             font-size: 13px;
         }
 
+        body.dark-mode .installment-item {
+            background: #1e293b;
+            color: var(--text-dark);
+        }
+
         .installment-item.paid {
             opacity: 0.6;
         }
 
         .installment-item.overdue {
             background: #ffebee;
+        }
+
+        body.dark-mode .installment-item.overdue {
+            background: #7f1d1d;
         }
 
         .loan-actions {
@@ -472,7 +595,7 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--bg-card);
             padding: 30px;
             border-radius: 12px;
             max-width: 600px;
@@ -488,30 +611,35 @@
             margin-bottom: 20px;
         }
 
+        .modal-header h2 {
+            color: var(--text-dark);
+        }
+
         .modal-close {
-            background: #e0e0e0;
+            background: var(--bg-light);
             border: none;
             padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
+            color: var(--text-dark);
         }
 
         .reminder-template {
-            background: #f8f9fa;
+            background: var(--bg-light);
             padding: 15px;
             border-radius: 8px;
             margin: 15px 0;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-color);
         }
 
         .reminder-template textarea {
-            background: white;
+            background: var(--bg-card);
             font-family: monospace;
             font-size: 13px;
         }
 
         .copy-btn {
-            background: #3498db;
+            background: var(--info-color);
             color: white;
             border: none;
             padding: 8px 16px;
@@ -524,12 +652,36 @@
             background: #2980b9;
         }
 
+        .undo-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--text-dark);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .undo-notification.show {
+            display: flex;
+        }
+
         @media (max-width: 600px) {
             .header h1 {
                 font-size: 1.8em;
             }
 
-            .form-row {
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
+
+            .form-row, .filters-row {
                 grid-template-columns: 1fr;
             }
 
@@ -541,820 +693,1214 @@
                 width: 100%;
             }
 
-            .stats {
+            .stats, .analytics-grid {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>💰 Personal Lending Tracker</h1>
-            <p>Keep track of money you've lent to friends and family</p>
+    <!-- Insert this inside <body> tag after the CSS from Part 1 -->
+
+<div class="container">
+    <div class="header">
+        <button class="theme-toggle" id="theme-toggle" type="button">🌙</button>
+        <h1>💰 Personal Lending Tracker</h1>
+        <p>Keep track of money you've lent to friends and family</p>
+    </div>
+
+    <div class="content">
+        <!-- Authentication Section -->
+        <div id="auth-section">
+            <h2 style="text-align: center; margin-bottom: 20px;">Sign In or Create Account</h2>
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="your@email.com" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
+            <button id="signup-btn" class="btn btn-secondary" type="button" style="width: 100%;">Create Account</button>
+            <div id="auth-message"></div>
         </div>
 
-        <div class="content">
-            <!-- Authentication Section -->
-            <div id="auth-section">
-                <h2 style="text-align: center; margin-bottom: 20px;">Sign In or Create Account</h2>
-                <div class="input-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="your@email.com" required>
+        <!-- App Section -->
+        <div id="app-section" style="display: none;">
+            <div class="user-info">
+                <span><strong>Logged in as:</strong> <span id="user-email"></span></span>
+                <div style="display: flex; gap: 10px;">
+                    <button id="backup-btn" class="btn btn-secondary btn-sm" type="button">💾 Backup</button>
+                    <button id="logout-btn" class="btn btn-secondary btn-sm" type="button">Log Out</button>
                 </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
-                </div>
-                <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
-                <button id="signup-btn" class="btn btn-secondary" type="button" style="width: 100%;">Create Account</button>
-                <div id="auth-message"></div>
             </div>
 
-            <!-- App Section -->
-            <div id="app-section" style="display: none;">
-                <div class="user-info">
-                    <span><strong>Logged in as:</strong> <span id="user-email"></span></span>
-                    <button id="logout-btn" class="btn btn-secondary" type="button">Log Out</button>
-                </div>
-
-                <!-- Statistics -->
-                <div class="stats">
-                    <div class="stat-card">
-                        <h3>Total Lent</h3>
-                        <div class="amount">$<span id="total-lent">0.00</span></div>
+            <!-- Search and Filter Section -->
+            <div class="filters-section">
+                <h3>🔍 Search & Filter</h3>
+                <div class="filters-row">
+                    <div class="input-group" style="margin: 0;">
+                        <input type="text" id="search-input" placeholder="Search by borrower name...">
                     </div>
-                    <div class="stat-card">
-                        <h3>Total Paid</h3>
-                        <div class="amount">$<span id="total-paid">0.00</span></div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Outstanding</h3>
-                        <div class="amount">$<span id="outstanding">0.00</span></div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Total Interest</h3>
-                        <div class="amount">$<span id="total-interest">0.00</span></div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Active Loans</h3>
-                        <div class="amount"><span id="active-loans">0</span></div>
+                    <div class="input-group" style="margin: 0;">
+                        <select id="sort-select">
+                            <option value="date-desc">Newest First</option>
+                            <option value="date-asc">Oldest First</option>
+                            <option value="amount-desc">Highest Amount</option>
+                            <option value="amount-asc">Lowest Amount</option>
+                            <option value="name-asc">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                            <option value="due-asc">Due Date (Soonest)</option>
+                        </select>
                     </div>
                 </div>
+                <div class="filter-tags" style="margin-top: 15px;">
+                    <div class="filter-tag active" data-filter="all">All Loans</div>
+                    <div class="filter-tag" data-filter="unpaid">Unpaid Only</div>
+                    <div class="filter-tag" data-filter="paid">Paid Only</div>
+                    <div class="filter-tag" data-filter="overdue">Overdue</div>
+                </div>
+            </div>
 
-                <!-- Charts -->
-                <div class="chart-container">
-                    <h3>📊 Lending Overview</h3>
-                    <div class="bar-chart" id="lending-chart"></div>
+            <!-- Statistics -->
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>Total Lent</h3>
+                    <div class="amount">$<span id="total-lent">0.00</span></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Paid</h3>
+                    <div class="amount">$<span id="total-paid">0.00</span></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Outstanding</h3>
+                    <div class="amount">$<span id="outstanding">0.00</span></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Interest</h3>
+                    <div class="amount">$<span id="total-interest">0.00</span></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Loans</h3>
+                    <div class="amount"><span id="active-loans">0</span></div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="analytics-section">
+                <h3>📈 Analytics & Insights</h3>
+                <div class="analytics-grid">
+                    <div class="analytics-item">
+                        <h4>Average Loan Amount</h4>
+                        <div class="value">$<span id="avg-loan">0</span></div>
+                    </div>
+                    <div class="analytics-item">
+                        <h4>Average Repayment Time</h4>
+                        <div class="value"><span id="avg-repayment">0</span> days</div>
+                    </div>
+                    <div class="analytics-item">
+                        <h4>Most Reliable Borrower</h4>
+                        <div class="value" id="best-borrower" style="font-size: 1.2em;">-</div>
+                    </div>
+                    <div class="analytics-item">
+                        <h4>Total Borrowers</h4>
+                        <div class="value"><span id="total-borrowers">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="chart-container">
+                <h3>📊 Lending Overview</h3>
+                <div class="bar-chart" id="lending-chart"></div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="notification-section">
+                <h3>🔔 Reminder Settings</h3>
+                <div class="input-group">
+                    <label for="remind-days">Remind me (days before due date):</label>
+                    <input type="number" id="remind-days" value="3" min="1" max="30">
+                </div>
+                <div style="margin-top: 10px;">
+                    <span id="notify-status">Click to enable reminders</span>
+                    <button id="notify-toggle" class="btn btn-secondary" type="button" style="margin-left: 10px;">Enable Reminders</button>
+                </div>
+            </div>
+
+            <!-- Add Loan Form -->
+            <div class="form-section">
+                <h2>Add New Loan</h2>
+                
+                <!-- Quick Templates -->
+                <div class="quick-add-templates">
+                    <button class="template-btn" data-template="small" type="button">💵 Small ($50, 30 days)</button>
+                    <button class="template-btn" data-template="medium" type="button">💰 Medium ($500, 60 days)</button>
+                    <button class="template-btn" data-template="large" type="button">💎 Large ($2000, 90 days)</button>
                 </div>
 
-                <!-- Notification Settings -->
-                <div class="notification-section">
-                    <h3>🔔 Reminder Settings</h3>
-                    <div class="input-group">
-                        <label for="remind-days">Remind me (days before due date):</label>
-                        <input type="number" id="remind-days" value="3" min="1" max="30">
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <span id="notify-status">Click to enable reminders</span>
-                        <button id="notify-toggle" class="btn btn-secondary" type="button" style="margin-left: 10px;">Enable Reminders</button>
-                    </div>
-                </div>
-
-                <!-- Add Loan Form -->
-                <div class="form-section">
-                    <h2>Add New Loan</h2>
-                    <form id="loan-form">
-                        <div class="form-row">
-                            <div class="input-group">
-                                <label for="borrower">Borrower Name *</label>
-                                <input type="text" id="borrower" placeholder="John Doe" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="amount">Amount ($) *</label>
-                                <input type="number" id="amount" step="0.01" min="0.01" placeholder="100.00" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="due-date">Due Date *</label>
-                                <input type="date" id="due-date" required>
-                            </div>
+                <form id="loan-form">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="borrower">Borrower Name *</label>
+                            <input type="text" id="borrower" placeholder="John Doe" required list="borrower-list">
+                            <datalist id="borrower-list"></datalist>
                         </div>
-                        
+                        <div class="input-group">
+                            <label for="amount">Amount ($) *</label>
+                            <input type="number" id="amount" step="0.01" min="0.01" placeholder="100.00" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="due-date">Due Date *</label>
+                            <input type="date" id="due-date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="interest-rate">Interest Rate (% per year)</label>
+                            <input type="number" id="interest-rate" step="0.1" min="0" max="100" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label for="interest-type">Interest Type</label>
+                            <select id="interest-type">
+                                <option value="none">No Interest</option>
+                                <option value="simple">Simple Interest</option>
+                                <option value="compound">Compound Interest (Monthly)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enable-installments">
+                        <label for="enable-installments">Enable Payment Plan</label>
+                    </div>
+
+                    <div id="installments-config" style="display: none; margin-top: 15px;">
                         <div class="form-row">
                             <div class="input-group">
-                                <label for="interest-rate">Interest Rate (% per year)</label>
-                                <input type="number" id="interest-rate" step="0.1" min="0" max="100" placeholder="0">
+                                <label for="num-installments">Number of Installments</label>
+                                <input type="number" id="num-installments" min="2" max="60" placeholder="12">
                             </div>
                             <div class="input-group">
-                                <label for="interest-type">Interest Type</label>
-                                <select id="interest-type">
-                                    <option value="none">No Interest</option>
-                                    <option value="simple">Simple Interest</option>
-                                    <option value="compound">Compound Interest (Monthly)</option>
+                                <label for="installment-frequency">Frequency</label>
+                                <select id="installment-frequency">
+                                    <option value="weekly">Weekly</option>
+                                    <option value="biweekly">Bi-weekly</option>
+                                    <option value="monthly" selected>Monthly</option>
                                 </select>
                             </div>
                         </div>
-
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="enable-installments">
-                            <label for="enable-installments">Enable Payment Plan</label>
-                        </div>
-
-                        <div id="installments-config" style="display: none; margin-top: 15px;">
-                            <div class="form-row">
-                                <div class="input-group">
-                                    <label for="num-installments">Number of Installments</label>
-                                    <input type="number" id="num-installments" min="2" max="60" placeholder="12">
-                                </div>
-                                <div class="input-group">
-                                    <label for="installment-frequency">Frequency</label>
-                                    <select id="installment-frequency">
-                                        <option value="weekly">Weekly</option>
-                                        <option value="biweekly">Bi-weekly</option>
-                                        <option value="monthly" selected>Monthly</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="notes">Notes (optional)</label>
-                            <textarea id="notes" placeholder="Add any additional details..."></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-success" style="width: 100%;">Add Loan</button>
-                    </form>
-                </div>
-
-                <!-- Loans List -->
-                <div style="margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2>Your Loans</h2>
-                        <button id="export-btn" class="btn btn-secondary" type="button">Export to CSV</button>
                     </div>
-                    <ul id="loans-list"></ul>
+
+                    <div class="input-group">
+                        <label for="notes">Notes (optional)</label>
+                        <textarea id="notes" placeholder="Add any additional details..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success" style="width: 100%;">Add Loan</button>
+                </form>
+            </div>
+
+            <!-- Loans List -->
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2>Your Loans (<span id="loan-count">0</span>)</h2>
+                    <button id="export-btn" class="btn btn-secondary" type="button">Export to CSV</button>
                 </div>
+                <ul id="loans-list"></ul>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Payment Modal -->
-    <div id="payment-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Record Payment</h2>
-                <button class="modal-close" id="close-modal-btn" type="button">✕</button>
-            </div>
-            <form id="payment-form">
-                <div class="input-group">
-                    <label for="payment-amount">Payment Amount ($) *</label>
-                    <input type="number" id="payment-amount" step="0.01" min="0.01" required>
-                </div>
-                <div class="input-group">
-                    <label for="payment-date">Payment Date *</label>
-                    <input type="date" id="payment-date" required>
-                </div>
-                <div class="input-group">
-                    <label for="payment-notes">Payment Notes (optional)</label>
-                    <textarea id="payment-notes" placeholder="Add payment details..."></textarea>
-                </div>
-                <button type="submit" class="btn btn-success" style="width: 100%;">Record Payment</button>
-            </form>
+<!-- Payment Modal -->
+<div id="payment-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Record Payment</h2>
+            <button class="modal-close" id="close-modal-btn" type="button">✕</button>
         </div>
+        <form id="payment-form">
+            <div class="input-group">
+                <label for="payment-amount">Payment Amount ($) *</label>
+                <input type="number" id="payment-amount" step="0.01" min="0.01" required>
+            </div>
+            <div class="input-group">
+                <label for="payment-date">Payment Date *</label>
+                <input type="date" id="payment-date" required>
+            </div>
+            <div class="input-group">
+                <label for="payment-notes">Payment Notes (optional)</label>
+                <textarea id="payment-notes" placeholder="Add payment details..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-success" style="width: 100%;">Record Payment</button>
+        </form>
     </div>
+</div>
 
-    <!-- Reminder Modal -->
-    <div id="reminder-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Send Payment Reminder</h2>
-                <button class="modal-close" id="close-reminder-modal-btn" type="button">✕</button>
-            </div>
-            <div class="reminder-template">
-                <label><strong>Message Template:</strong></label>
-                <textarea id="reminder-text" rows="8" readonly></textarea>
-                <button class="copy-btn" id="copy-reminder-btn" type="button">📋 Copy to Clipboard</button>
-            </div>
-            <p style="color: #7f8c8d; font-size: 13px; margin-top: 10px;">
-                Copy this message and send it via your preferred messaging app.
+<!-- Reminder Modal -->
+<div id="reminder-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Send Payment Reminder</h2>
+            <button class="modal-close" id="close-reminder-modal-btn" type="button">✕</button>
+        </div>
+        <div class="reminder-template">
+            <label><strong>Message Template:</strong></label>
+            <textarea id="reminder-text" rows="8" readonly></textarea>
+            <button class="copy-btn" id="copy-reminder-btn" type="button">📋 Copy to Clipboard</button>
+        </div>
+        <p style="color: var(--text-light); font-size: 13px; margin-top: 10px;">
+            Copy this message and send it via your preferred messaging app.
+        </p>
+    </div>
+</div>
+
+<!-- Backup Modal -->
+<div id="backup-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Backup & Restore</h2>
+            <button class="modal-close" id="close-backup-modal-btn" type="button">✕</button>
+        </div>
+        <div>
+            <h3 style="margin-bottom: 10px; color: var(--text-dark);">Export Data</h3>
+            <p style="color: var(--text-light); font-size: 14px; margin-bottom: 15px;">
+                Download a JSON backup of all your loans and data.
             </p>
+            <button id="export-json-btn" class="btn btn-info" style="width: 100%;" type="button">📥 Download Backup (JSON)</button>
+            
+            <hr style="margin: 30px 0; border-color: var(--border-color);">
+            
+            <h3 style="margin-bottom: 10px; color: var(--text-dark);">Import Data</h3>
+            <p style="color: var(--text-light); font-size: 14px; margin-bottom: 15px;">
+                Restore your data from a previously exported JSON backup file.
+            </p>
+            <input type="file" id="import-json-input" accept=".json" style="margin-bottom: 10px;">
+            <button id="import-json-btn" class="btn btn-success" style="width: 100%;" type="button">📤 Import Backup</button>
         </div>
     </div>
+</div>
 
-    <!-- Firebase Modular SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        import { getDatabase, ref, onValue, push, set, remove } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+<!-- Undo Notification -->
+<div class="undo-notification" id="undo-notification">
+    <span id="undo-message">Loan deleted</span>
+    <button class="btn btn-secondary btn-sm" id="undo-btn" type="button">↩️ Undo</button>
+</div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBsHw8C5h6nPunSbvR5ssWHdGzPCM8qcNI",
-            authDomain: "lending-tracker-2ded9.firebaseapp.com",
-            databaseURL: "https://lending-tracker-2ded9-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "lending-tracker-2ded9",
-            storageBucket: "lending-tracker-2ded9.firebasestorage.app",
-            messagingSenderId: "346512563768",
-            appId: "1:346512563768:web:65095d67d7c9ff737310cd",
-            measurementId: "G-HQVVP0JT52"
-        };
+// <script type="module">
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import { getDatabase, ref, onValue, push, set, remove } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
-        let currentUser = null;
-        let loansRef = null;
-        let loansUnsubscribe = null;
-        let currentLoans = [];
-        let currentLoanForPayment = null;
-        let currentLoanForReminder = null;
+const firebaseConfig = {
+    apiKey: "AIzaSyBsHw8C5h6nPunSbvR5ssWHdGzPCM8qcNI",
+    authDomain: "lending-tracker-2ded9.firebaseapp.com",
+    databaseURL: "https://lending-tracker-2ded9-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "lending-tracker-2ded9",
+    storageBucket: "lending-tracker-2ded9.firebasestorage.app",
+    messagingSenderId: "346512563768",
+    appId: "1:346512563768:web:65095d67d7c9ff737310cd",
+    measurementId: "G-HQVVP0JT52"
+};
 
-        // Enable/disable installments
-        document.getElementById('enable-installments').addEventListener('change', function() {
-            document.getElementById('installments-config').style.display = this.checked ? 'block' : 'none';
-        });
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-        function closePaymentModal() {
-            document.getElementById('payment-modal').classList.remove('active');
-            document.getElementById('payment-form').reset();
-            currentLoanForPayment = null;
+let currentUser = null;
+let loansRef = null;
+let loansUnsubscribe = null;
+let currentLoans = [];
+let filteredLoans = [];
+let currentLoanForPayment = null;
+let currentLoanForReminder = null;
+let currentFilter = 'all';
+let currentSort = 'date-desc';
+let searchQuery = '';
+let undoStack = [];
+
+// Theme Toggle
+const themeToggle = document.getElementById('theme-toggle');
+const savedTheme = localStorage.getItem('theme') || 'light';
+if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    themeToggle.textContent = '☀️';
+}
+
+themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
+
+// Quick Templates
+document.querySelectorAll('.template-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const template = this.getAttribute('data-template');
+        const today = new Date();
+        let amount, days;
+        
+        switch(template) {
+            case 'small':
+                amount = 50;
+                days = 30;
+                break;
+            case 'medium':
+                amount = 500;
+                days = 60;
+                break;
+            case 'large':
+                amount = 2000;
+                days = 90;
+                break;
+        }
+        
+        document.getElementById('amount').value = amount;
+        const dueDate = new Date(today);
+        dueDate.setDate(dueDate.getDate() + days);
+        document.getElementById('due-date').value = dueDate.toISOString().split('T')[0];
+    });
+});
+
+// Search and Filter
+document.getElementById('search-input').addEventListener('input', (e) => {
+    searchQuery = e.target.value.toLowerCase();
+    applyFiltersAndSort();
+});
+
+document.getElementById('sort-select').addEventListener('change', (e) => {
+    currentSort = e.target.value;
+    applyFiltersAndSort();
+});
+
+document.querySelectorAll('.filter-tag').forEach(tag => {
+    tag.addEventListener('click', function() {
+        document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        currentFilter = this.getAttribute('data-filter');
+        applyFiltersAndSort();
+    });
+});
+
+function applyFiltersAndSort() {
+    filteredLoans = currentLoans.filter(loan => {
+        if (searchQuery && !loan.borrower.toLowerCase().includes(searchQuery)) {
+            return false;
         }
 
-        function closeReminderModal() {
-            document.getElementById('reminder-modal').classList.remove('active');
-            currentLoanForReminder = null;
+        const remaining = calculateRemaining(loan);
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (currentFilter === 'unpaid' && remaining <= 0) return false;
+        if (currentFilter === 'paid' && remaining > 0) return false;
+        if (currentFilter === 'overdue' && (remaining <= 0 || loan.dueDate >= today)) return false;
+        
+        return true;
+    });
+
+    filteredLoans.sort((a, b) => {
+        switch(currentSort) {
+            case 'date-desc':
+                return (b.createdAt || 0) - (a.createdAt || 0);
+            case 'date-asc':
+                return (a.createdAt || 0) - (b.createdAt || 0);
+            case 'amount-desc':
+                return b.amount - a.amount;
+            case 'amount-asc':
+                return a.amount - b.amount;
+            case 'name-asc':
+                return a.borrower.localeCompare(b.borrower);
+            case 'name-desc':
+                return b.borrower.localeCompare(a.borrower);
+            case 'due-asc':
+                return a.dueDate.localeCompare(b.dueDate);
+            default:
+                return 0;
         }
+    });
 
-        document.getElementById('close-modal-btn').addEventListener('click', closePaymentModal);
-        document.getElementById('close-reminder-modal-btn').addEventListener('click', closeReminderModal);
+    renderLoans();
+}
 
-        document.getElementById('copy-reminder-btn').addEventListener('click', () => {
-            const text = document.getElementById('reminder-text').value;
-            navigator.clipboard.writeText(text).then(() => {
-                const btn = document.getElementById('copy-reminder-btn');
-                btn.textContent = '✓ Copied!';
-                setTimeout(() => {
-                    btn.textContent = '📋 Copy to Clipboard';
-                }, 2000);
-            });
-        });
+// Undo functionality
+function showUndo(message, action) {
+    const notification = document.getElementById('undo-notification');
+    document.getElementById('undo-message').textContent = message;
+    notification.classList.add('show');
+    
+    undoStack = [action];
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        undoStack = [];
+    }, 5000);
+}
 
-        function calculateInterest(loan) {
-            if (!loan.interestRate || loan.interestRate <= 0 || loan.interestType === 'none') return 0;
+document.getElementById('undo-btn').addEventListener('click', () => {
+    if (undoStack.length > 0) {
+        const action = undoStack.pop();
+        action();
+        document.getElementById('undo-notification').classList.remove('show');
+    }
+});
 
-            const principal = loan.amount;
-            const rate = loan.interestRate / 100;
-            const startDate = new Date(loan.createdAt || Date.now());
-            const endDate = new Date();
-            const years = (endDate - startDate) / (1000 * 60 * 60 * 24 * 365);
+// Backup functionality
+document.getElementById('backup-btn').addEventListener('click', () => {
+    document.getElementById('backup-modal').classList.add('active');
+});
 
-            if (loan.interestType === 'simple') {
-                return principal * rate * years;
-            } else if (loan.interestType === 'compound') {
-                const n = 12; // Monthly compounding
-                return principal * (Math.pow(1 + rate / n, n * years) - 1);
+document.getElementById('close-backup-modal-btn').addEventListener('click', () => {
+    document.getElementById('backup-modal').classList.remove('active');
+});
+
+document.getElementById('export-json-btn').addEventListener('click', () => {
+    const data = {
+        loans: currentLoans,
+        exportDate: new Date().toISOString(),
+        version: '1.0'
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `lending-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+});
+
+document.getElementById('import-json-btn').addEventListener('click', () => {
+    const fileInput = document.getElementById('import-json-input');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Please select a backup file first.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            
+            if (!data.loans || !Array.isArray(data.loans)) {
+                alert('Invalid backup file format.');
+                return;
             }
-            return 0;
-        }
 
-        function calculateTotalWithInterest(loan) {
-            return loan.amount + calculateInterest(loan);
-        }
-
-        function generateInstallments(loan) {
-            if (!loan.installments) return [];
-
-            const installments = [];
-            const frequencyDays = {
-                'weekly': 7,
-                'biweekly': 14,
-                'monthly': 30
-            };
-
-            const totalAmount = calculateTotalWithInterest(loan);
-            const installmentAmount = totalAmount / loan.installments.count;
-            const startDate = new Date(loan.createdAt || Date.now());
-            const daysBetween = frequencyDays[loan.installments.frequency] || 30;
-
-            for (let i = 0; i < loan.installments.count; i++) {
-                const dueDate = new Date(startDate);
-                dueDate.setDate(dueDate.getDate() + (daysBetween * (i + 1)));
+            if (confirm(`This will import ${data.loans.length} loans. Continue?`)) {
+                data.loans.forEach(loan => {
+                    const newLoanRef = push(loansRef);
+                    const { id, ...loanData } = loan;
+                    set(newLoanRef, loanData);
+                });
                 
-                installments.push({
-                    number: i + 1,
-                    amount: installmentAmount,
-                    dueDate: dueDate.toISOString().split('T')[0],
-                    paid: loan.installments.paid ? loan.installments.paid[i] : false
-                });
+                alert('Backup imported successfully!');
+                document.getElementById('backup-modal').classList.remove('active');
             }
-
-            return installments;
+        } catch (error) {
+            alert('Error reading backup file: ' + error.message);
         }
+    };
+    
+    reader.readAsText(file);
+});
 
-        function updateChart() {
-            const chartContainer = document.getElementById('lending-chart');
-            chartContainer.innerHTML = '';
+// Enable/disable installments
+document.getElementById('enable-installments').addEventListener('change', function() {
+    document.getElementById('installments-config').style.display = this.checked ? 'block' : 'none';
+});
 
-            if (currentLoans.length === 0) {
-                chartContainer.innerHTML = '<p style="text-align: center; color: #7f8c8d;">No loans to display</p>';
-                return;
-            }
+function closePaymentModal() {
+    document.getElementById('payment-modal').classList.remove('active');
+    document.getElementById('payment-form').reset();
+    currentLoanForPayment = null;
+}
 
-            // Group loans by borrower
-            const borrowerData = {};
-            currentLoans.forEach(loan => {
-                if (!borrowerData[loan.borrower]) {
-                    borrowerData[loan.borrower] = { lent: 0, paid: 0, remaining: 0 };
-                }
-                borrowerData[loan.borrower].lent += loan.amount;
-                borrowerData[loan.borrower].paid += calculateTotalPaid(loan);
-                borrowerData[loan.borrower].remaining += calculateRemaining(loan);
-            });
+function closeReminderModal() {
+    document.getElementById('reminder-modal').classList.remove('active');
+    currentLoanForReminder = null;
+}
 
-            const maxValue = Math.max(...Object.values(borrowerData).map(d => d.lent));
+document.getElementById('close-modal-btn').addEventListener('click', closePaymentModal);
+document.getElementById('close-reminder-modal-btn').addEventListener('click', closeReminderModal);
 
-            Object.entries(borrowerData).forEach(([borrower, data]) => {
-                const bar = document.createElement('div');
-                bar.className = 'bar';
-                bar.style.height = `${(data.remaining / maxValue) * 100}%`;
-                bar.innerHTML = `
-                    <div class="bar-value">$${data.remaining.toFixed(0)}</div>
-                    <div class="bar-label">${borrower}</div>
-                `;
-                chartContainer.appendChild(bar);
-            });
-        }
+document.getElementById('copy-reminder-btn').addEventListener('click', () => {
+    const text = document.getElementById('reminder-text').value;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copy-reminder-btn');
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {
+            btn.textContent = '📋 Copy to Clipboard';
+        }, 2000);
+    });
+});
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('auth-section').style.display = 'none';
-                document.getElementById('app-section').style.display = 'block';
-                document.getElementById('user-email').textContent = user.email;
+// Calculation Functions
+function calculateInterest(loan) {
+    if (!loan.interestRate || loan.interestRate <= 0 || loan.interestType === 'none') return 0;
 
-                loansRef = ref(db, 'users/' + user.uid + '/loans');
-                loadLoans();
-                setupNotifications();
-            } else {
-                currentUser = null;
-                document.getElementById('auth-section').style.display = 'block';
-                document.getElementById('app-section').style.display = 'none';
-                document.getElementById('auth-message').textContent = '';
-                document.getElementById('loans-list').innerHTML = '';
-                document.getElementById('total-lent').textContent = '0.00';
-                document.getElementById('total-paid').textContent = '0.00';
-                document.getElementById('outstanding').textContent = '0.00';
-                document.getElementById('total-interest').textContent = '0.00';
-                document.getElementById('active-loans').textContent = '0';
+    const principal = loan.amount;
+    const rate = loan.interestRate / 100;
+    const startDate = new Date(loan.createdAt || Date.now());
+    const endDate = new Date();
+    const years = (endDate - startDate) / (1000 * 60 * 60 * 24 * 365);
 
-                if (loansUnsubscribe) loansUnsubscribe();
-                currentLoans = [];
-            }
+    if (loan.interestType === 'simple') {
+        return principal * rate * years;
+    } else if (loan.interestType === 'compound') {
+        const n = 12;
+        return principal * (Math.pow(1 + rate / n, n * years) - 1);
+    }
+    return 0;
+}
+
+function calculateTotalWithInterest(loan) {
+    return loan.amount + calculateInterest(loan);
+}
+
+function calculateRemaining(loan) {
+    let totalPaid = 0;
+    if (loan.payments) {
+        Object.values(loan.payments).forEach(payment => {
+            totalPaid += payment.amount;
         });
+    }
+    const totalOwed = calculateTotalWithInterest(loan);
+    return totalOwed - totalPaid;
+}
 
-        function setupNotifications() {
-            const remindDaysInput = document.getElementById('remind-days');
-            const notifyStatus = document.getElementById('notify-status');
-            const notifyToggle = document.getElementById('notify-toggle');
-            let notificationInterval = null;
-
-            function getRemindDays() {
-                return parseInt(remindDaysInput.value) || 1;
-            }
-
-            function checkDueLoans() {
-                if (currentLoans.length === 0) return;
-                const today = new Date();
-                const remindDays = getRemindDays();
-
-                currentLoans.forEach(loan => {
-                    const remaining = calculateRemaining(loan);
-                    if (remaining <= 0) return;
-                    
-                    const dueDate = new Date(loan.dueDate);
-                    const daysUntilDue = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24));
-
-                    let message = '';
-                    if (daysUntilDue === 0) message = `Due TODAY: ${loan.borrower} owes ${remaining.toFixed(2)}`;
-                    else if (daysUntilDue > 0 && daysUntilDue <= remindDays) message = `Upcoming: ${loan.borrower} owes ${remaining.toFixed(2)} in ${daysUntilDue} day${daysUntilDue > 1 ? 's' : ''}`;
-                    else if (daysUntilDue < 0) message = `OVERDUE: ${loan.borrower} owes ${remaining.toFixed(2)}`;
-
-                    if (message && Notification.permission === "granted") {
-                        new Notification("Loan Reminder 💰", { body: message });
-                    }
-                });
-            }
-
-            function startChecking() {
-                checkDueLoans();
-                notificationInterval = setInterval(checkDueLoans, 3600000);
-            }
-
-            function stopChecking() {
-                if (notificationInterval) clearInterval(notificationInterval);
-            }
-
-            if (Notification.permission === "granted") {
-                notifyStatus.textContent = "✅ Reminders active";
-                notifyToggle.textContent = "Disable Reminders";
-                startChecking();
-            } else {
-                notifyStatus.textContent = "Click to enable reminders";
-            }
-
-            notifyToggle.addEventListener('click', () => {
-                if (Notification.permission === "granted") {
-                    stopChecking();
-                    notifyStatus.textContent = "Reminders disabled";
-                    notifyToggle.textContent = "Enable Reminders";
-                } else {
-                    Notification.requestPermission().then(perm => {
-                        if (perm === "granted") {
-                            notifyStatus.textContent = "✅ Reminders active";
-                            notifyToggle.textContent = "Disable Reminders";
-                            startChecking();
-                        }
-                    });
-                }
-            });
-
-            remindDaysInput.addEventListener('change', checkDueLoans);
-        }
-
-        document.getElementById('signup-btn').addEventListener('click', () => {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const msg = document.getElementById('auth-message');
-            if (!email || !password) {
-                msg.textContent = "Please enter email and password";
-                msg.style.color = "#e74c3c";
-                return;
-            }
-            msg.textContent = "Creating account...";
-            msg.style.color = "#667eea";
-            createUserWithEmailAndPassword(auth, email, password)
-                .catch(err => {
-                    if (err.code === 'auth/email-already-in-use') {
-                        msg.textContent = "Email already registered. Log in instead.";
-                        msg.style.color = "#e67e22";
-                    } else {
-                        msg.textContent = err.message;
-                        msg.style.color = "#e74c3c";
-                    }
-                });
+function calculateTotalPaid(loan) {
+    let totalPaid = 0;
+    if (loan.payments) {
+        Object.values(loan.payments).forEach(payment => {
+            totalPaid += payment.amount;
         });
+    }
+    return totalPaid;
+}
 
-        document.getElementById('login-btn').addEventListener('click', () => {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const msg = document.getElementById('auth-message');
-            if (!email || !password) {
-                msg.textContent = "Please enter email and password";
-                msg.style.color = "#e74c3c";
-                return;
-            }
-            msg.textContent = "Logging in...";
-            msg.style.color = "#667eea";
-            signInWithEmailAndPassword(auth, email, password)
-                .catch(err => {
-                    msg.textContent = err.message;
-                    msg.style.color = "#e74c3c";
-                });
+function generateInstallments(loan) {
+    if (!loan.installments) return [];
+
+    const installments = [];
+    const frequencyDays = {
+        'weekly': 7,
+        'biweekly': 14,
+        'monthly': 30
+    };
+
+    const totalAmount = calculateTotalWithInterest(loan);
+    const installmentAmount = totalAmount / loan.installments.count;
+    const startDate = new Date(loan.createdAt || Date.now());
+    const daysBetween = frequencyDays[loan.installments.frequency] || 30;
+
+    for (let i = 0; i < loan.installments.count; i++) {
+        const dueDate = new Date(startDate);
+        dueDate.setDate(dueDate.getDate() + (daysBetween * (i + 1)));
+        
+        installments.push({
+            number: i + 1,
+            amount: installmentAmount,
+            dueDate: dueDate.toISOString().split('T')[0],
+            paid: loan.installments.paid ? loan.installments.paid[i] : false
         });
+    }
 
-        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+    return installments;
+}
 
-        function calculateRemaining(loan) {
-            let totalPaid = 0;
-            if (loan.payments) {
-                Object.values(loan.payments).forEach(payment => {
-                    totalPaid += payment.amount;
-                });
-            }
-            const totalOwed = calculateTotalWithInterest(loan);
-            return totalOwed - totalPaid;
+function generateReminderMessage(loan) {
+    const remaining = calculateRemaining(loan);
+    const interest = calculateInterest(loan);
+    const dueDate = new Date(loan.dueDate);
+    const today = new Date();
+    const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+
+    let message = `Hi ${loan.borrower},\n\n`;
+    message += `This is a friendly reminder about the loan:\n\n`;
+    message += `Original Amount: $${loan.amount.toFixed(2)}\n`;
+    
+    if (interest > 0) {
+        message += `Interest (${loan.interestRate}% ${loan.interestType}): $${interest.toFixed(2)}\n`;
+        message += `Total Amount Due: $${(loan.amount + interest).toFixed(2)}\n`;
+    }
+    
+    message += `Amount Paid So Far: $${calculateTotalPaid(loan).toFixed(2)}\n`;
+    message += `Remaining Balance: $${remaining.toFixed(2)}\n`;
+    message += `Due Date: ${loan.dueDate}\n`;
+
+    if (daysOverdue > 0) {
+        message += `\n⚠️ This payment is ${daysOverdue} day${daysOverdue > 1 ? 's' : ''} overdue.\n`;
+    } else if (daysOverdue < 0) {
+        message += `\nPayment is due in ${Math.abs(daysOverdue)} day${Math.abs(daysOverdue) > 1 ? 's' : ''}.\n`;
+    }
+
+    if (loan.installments) {
+        const installments = generateInstallments(loan);
+        const nextUnpaid = installments.find(i => !i.paid);
+        if (nextUnpaid) {
+            message += `\nNext Installment: $${nextUnpaid.amount.toFixed(2)} due on ${nextUnpaid.dueDate}\n`;
         }
+    }
 
-        function calculateTotalPaid(loan) {
-            let totalPaid = 0;
-            if (loan.payments) {
-                Object.values(loan.payments).forEach(payment => {
-                    totalPaid += payment.amount;
-                });
-            }
-            return totalPaid;
+    message += `\nPlease let me know if you have any questions.\n\nThank you!`;
+    
+    return message;
+}
+
+// Continue to Part 4 for more functions...
+
+// Continue from Part 3...
+
+function updateChart() {
+    const chartContainer = document.getElementById('lending-chart');
+    chartContainer.innerHTML = '';
+
+    if (currentLoans.length === 0) {
+        chartContainer.innerHTML = '<p style="text-align: center; color: var(--text-light);">No loans to display</p>';
+        return;
+    }
+
+    const borrowerData = {};
+    currentLoans.forEach(loan => {
+        if (!borrowerData[loan.borrower]) {
+            borrowerData[loan.borrower] = { lent: 0, paid: 0, remaining: 0 };
         }
+        borrowerData[loan.borrower].lent += loan.amount;
+        borrowerData[loan.borrower].paid += calculateTotalPaid(loan);
+        borrowerData[loan.borrower].remaining += calculateRemaining(loan);
+    });
 
-        function deletePayment(loanId, paymentId) {
-            if (confirm('Delete this payment?')) {
-                remove(ref(db, 'users/' + currentUser.uid + '/loans/' + loanId + '/payments/' + paymentId));
-            }
+    const maxValue = Math.max(...Object.values(borrowerData).map(d => d.remaining));
+
+    Object.entries(borrowerData).forEach(([borrower, data]) => {
+        const bar = document.createElement('div');
+        bar.style.flex = '1';
+        bar.style.margin = '0 5px';
+        bar.style.background = 'linear-gradient(to top, var(--primary-color), var(--secondary-color))';
+        bar.style.borderRadius = '8px 8px 0 0';
+        bar.style.position = 'relative';
+        bar.style.transition = 'all 0.3s';
+        bar.style.height = `${(data.remaining / maxValue) * 100}%`;
+        bar.innerHTML = `
+            <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: bold; color: var(--text-dark);">$${data.remaining.toFixed(0)}</div>
+            <div style="position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 12px; white-space: nowrap; color: var(--text-dark);">${borrower}</div>
+        `;
+        chartContainer.appendChild(bar);
+    });
+}
+
+function updateAnalytics() {
+    if (currentLoans.length === 0) {
+        document.getElementById('avg-loan').textContent = '0';
+        document.getElementById('avg-repayment').textContent = '0';
+        document.getElementById('best-borrower').textContent = '-';
+        document.getElementById('total-borrowers').textContent = '0';
+        return;
+    }
+
+    const avgLoan = currentLoans.reduce((sum, loan) => sum + loan.amount, 0) / currentLoans.length;
+    document.getElementById('avg-loan').textContent = avgLoan.toFixed(0);
+
+    const completedLoans = currentLoans.filter(loan => calculateRemaining(loan) <= 0);
+    if (completedLoans.length > 0) {
+        const totalDays = completedLoans.reduce((sum, loan) => {
+            const start = new Date(loan.createdAt || Date.now());
+            const lastPayment = loan.payments ? 
+                Math.max(...Object.values(loan.payments).map(p => new Date(p.date).getTime())) :
+                Date.now();
+            return sum + Math.floor((lastPayment - start) / (1000 * 60 * 60 * 24));
+        }, 0);
+        document.getElementById('avg-repayment').textContent = Math.round(totalDays / completedLoans.length);
+    } else {
+        document.getElementById('avg-repayment').textContent = '0';
+    }
+
+    const borrowerStats = {};
+    currentLoans.forEach(loan => {
+        if (!borrowerStats[loan.borrower]) {
+            borrowerStats[loan.borrower] = { total: 0, completed: 0 };
         }
+        borrowerStats[loan.borrower].total++;
+        if (calculateRemaining(loan) <= 0) {
+            borrowerStats[loan.borrower].completed++;
+        }
+    });
 
-        function generateReminderMessage(loan) {
+    let bestBorrower = { name: '-', rate: 0 };
+    Object.entries(borrowerStats).forEach(([name, stats]) => {
+        const rate = stats.completed / stats.total;
+        if (rate > bestBorrower.rate || (rate === bestBorrower.rate && stats.total > 1)) {
+            bestBorrower = { name, rate };
+        }
+    });
+    document.getElementById('best-borrower').textContent = bestBorrower.name;
+
+    document.getElementById('total-borrowers').textContent = Object.keys(borrowerStats).length;
+}
+
+function updateBorrowerList() {
+    const datalist = document.getElementById('borrower-list');
+    datalist.innerHTML = '';
+    
+    const uniqueBorrowers = [...new Set(currentLoans.map(loan => loan.borrower))];
+    uniqueBorrowers.forEach(borrower => {
+        const option = document.createElement('option');
+        option.value = borrower;
+        datalist.appendChild(option);
+    });
+}
+
+// Auth
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+        document.getElementById('auth-section').style.display = 'none';
+        document.getElementById('app-section').style.display = 'block';
+        document.getElementById('user-email').textContent = user.email;
+
+        loansRef = ref(db, 'users/' + user.uid + '/loans');
+        loadLoans();
+        setupNotifications();
+    } else {
+        currentUser = null;
+        document.getElementById('auth-section').style.display = 'block';
+        document.getElementById('app-section').style.display = 'none';
+        document.getElementById('auth-message').textContent = '';
+        document.getElementById('loans-list').innerHTML = '';
+        document.getElementById('total-lent').textContent = '0.00';
+        document.getElementById('total-paid').textContent = '0.00';
+        document.getElementById('outstanding').textContent = '0.00';
+        document.getElementById('total-interest').textContent = '0.00';
+        document.getElementById('active-loans').textContent = '0';
+        document.getElementById('loan-count').textContent = '0';
+
+        if (loansUnsubscribe) loansUnsubscribe();
+        currentLoans = [];
+    }
+});
+
+function setupNotifications() {
+    const remindDaysInput = document.getElementById('remind-days');
+    const notifyStatus = document.getElementById('notify-status');
+    const notifyToggle = document.getElementById('notify-toggle');
+    let notificationInterval = null;
+
+    function getRemindDays() {
+        return parseInt(remindDaysInput.value) || 1;
+    }
+
+    function checkDueLoans() {
+        if (currentLoans.length === 0) return;
+        const today = new Date();
+        const remindDays = getRemindDays();
+
+        currentLoans.forEach(loan => {
             const remaining = calculateRemaining(loan);
-            const interest = calculateInterest(loan);
+            if (remaining <= 0) return;
+            
             const dueDate = new Date(loan.dueDate);
-            const today = new Date();
-            const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+            const daysUntilDue = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24));
 
-            let message = `Hi ${loan.borrower},\n\n`;
-            message += `This is a friendly reminder about the loan:\n\n`;
-            message += `Original Amount: ${loan.amount.toFixed(2)}\n`;
-            
-            if (interest > 0) {
-                message += `Interest (${loan.interestRate}% ${loan.interestType}): ${interest.toFixed(2)}\n`;
-                message += `Total Amount Due: ${(loan.amount + interest).toFixed(2)}\n`;
+            let message = '';
+            if (daysUntilDue === 0) message = `Due TODAY: ${loan.borrower} owes $${remaining.toFixed(2)}`;
+            else if (daysUntilDue > 0 && daysUntilDue <= remindDays) message = `Upcoming: ${loan.borrower} owes $${remaining.toFixed(2)} in ${daysUntilDue} day${daysUntilDue > 1 ? 's' : ''}`;
+            else if (daysUntilDue < 0) message = `OVERDUE: ${loan.borrower} owes $${remaining.toFixed(2)}`;
+
+            if (message && Notification.permission === "granted") {
+                new Notification("Loan Reminder 💰", { body: message });
             }
-            
-            message += `Amount Paid So Far: ${calculateTotalPaid(loan).toFixed(2)}\n`;
-            message += `Remaining Balance: ${remaining.toFixed(2)}\n`;
-            message += `Due Date: ${loan.dueDate}\n`;
+        });
+    }
 
-            if (daysOverdue > 0) {
-                message += `\n⚠️ This payment is ${daysOverdue} day${daysOverdue > 1 ? 's' : ''} overdue.\n`;
-            } else if (daysOverdue < 0) {
-                message += `\nPayment is due in ${Math.abs(daysOverdue)} day${Math.abs(daysOverdue) > 1 ? 's' : ''}.\n`;
-            }
+    function startChecking() {
+        checkDueLoans();
+        notificationInterval = setInterval(checkDueLoans, 3600000);
+    }
 
-            if (loan.installments) {
-                const installments = generateInstallments(loan);
-                const nextUnpaid = installments.find(i => !i.paid);
-                if (nextUnpaid) {
-                    message += `\nNext Installment: ${nextUnpaid.amount.toFixed(2)} due on ${nextUnpaid.dueDate}\n`;
+    function stopChecking() {
+        if (notificationInterval) clearInterval(notificationInterval);
+    }
+
+    if (Notification.permission === "granted") {
+        notifyStatus.textContent = "✅ Reminders active";
+        notifyToggle.textContent = "Disable Reminders";
+        startChecking();
+    } else {
+        notifyStatus.textContent = "Click to enable reminders";
+    }
+
+    notifyToggle.addEventListener('click', () => {
+        if (Notification.permission === "granted") {
+            stopChecking();
+            notifyStatus.textContent = "Reminders disabled";
+            notifyToggle.textContent = "Enable Reminders";
+        } else {
+            Notification.requestPermission().then(perm => {
+                if (perm === "granted") {
+                    notifyStatus.textContent = "✅ Reminders active";
+                    notifyToggle.textContent = "Disable Reminders";
+                    startChecking();
                 }
-            }
-
-            message += `\nPlease let me know if you have any questions.\n\nThank you!`;
-            
-            return message;
-        }
-
-        function loadLoans() {
-            if (loansUnsubscribe) loansUnsubscribe();
-
-            loansUnsubscribe = onValue(loansRef, (snapshot) => {
-                const list = document.getElementById('loans-list');
-                list.innerHTML = '';
-                let totalLent = 0;
-                let totalPaidAll = 0;
-                let outstanding = 0;
-                let totalInterest = 0;
-                let activeLoans = 0;
-                const today = new Date().toISOString().split('T')[0];
-
-                currentLoans = [];
-
-                snapshot.forEach(child => {
-                    const loan = child.val();
-                    loan.id = child.key;
-                    currentLoans.push(loan);
-
-                    totalLent += loan.amount;
-                    const paidAmount = calculateTotalPaid(loan);
-                    totalPaidAll += paidAmount;
-                    const interest = calculateInterest(loan);
-                    totalInterest += interest;
-                    const remaining = calculateRemaining(loan);
-                    outstanding += remaining;
-                    if (remaining > 0) activeLoans++;
-
-                    const li = document.createElement('li');
-                    if (loan.dueDate < today && remaining > 0) li.classList.add('overdue');
-
-                    const totalWithInterest = calculateTotalWithInterest(loan);
-                    const progressPercent = (paidAmount / totalWithInterest) * 100;
-
-                    let paymentsHTML = '';
-                    if (loan.payments) {
-                        const paymentsArray = Object.entries(loan.payments).map(([key, val]) => ({
-                            id: key,
-                            ...val
-                        })).sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                        paymentsHTML = `
-                            <div class="payments-section">
-                                <h4>💵 Payment History (${paymentsArray.length})</h4>
-                                ${paymentsArray.map(payment => `
-                                    <div class="payment-item">
-                                        <span class="date">${payment.date}</span>
-                                        <span class="amount">+${payment.amount.toFixed(2)}</span>
-                                        <button class="delete-payment" data-loan-id="${loan.id}" data-payment-id="${payment.id}" type="button">×</button>
-                                    </div>
-                                    ${payment.notes ? `<div style="font-size:12px;color:#888;padding-left:10px;font-style:italic;">${payment.notes}</div>` : ''}
-                                `).join('')}
-                            </div>
-                        `;
-                    }
-
-                    let installmentsHTML = '';
-                    if (loan.installments) {
-                        const installments = generateInstallments(loan);
-                        installmentsHTML = `
-                            <div class="installments-section">
-                                <h4>📅 Payment Plan (${loan.installments.frequency})</h4>
-                                ${installments.map(inst => {
-                                    const isPaid = inst.paid;
-                                    const isOverdue = !isPaid && inst.dueDate < today;
-                                    return `
-                                        <div class="installment-item ${isPaid ? 'paid' : ''} ${isOverdue ? 'overdue' : ''}">
-                                            <span>${isPaid ? '✓' : ''} Installment #${inst.number} - ${inst.dueDate}</span>
-                                            <span style="font-weight: bold;">${inst.amount.toFixed(2)}</span>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        `;
-                    }
-
-                    li.innerHTML = `
-                        <div class="loan-header">
-                            <div>
-                                <strong style="font-size: 1.3em;">${loan.borrower}</strong>
-                                ${remaining <= 0 ? '<span style="color: #27ae60; font-weight: bold; margin-left: 10px;">✓ PAID IN FULL</span>' : ''}
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 1.4em; color: #667eea; font-weight: bold;">${loan.amount.toFixed(2)}</div>
-                                <div style="font-size: 0.85em; color: #7f8c8d;">Original Amount</div>
-                            </div>
-                        </div>
-                        
-                        <div class="loan-info">
-                            <div class="loan-info-row">
-                                <span style="color: #7f8c8d;">📅 Due Date:</span>
-                                <span style="font-weight: 600;">${loan.dueDate}</span>
-                            </div>
-                            ${interest > 0 ? `
-                                <div class="loan-info-row">
-                                    <span style="color: #7f8c8d;">📈 Interest (${loan.interestRate}% ${loan.interestType}):</span>
-                                    <span style="font-weight: 600; color: #f39c12;">${interest.toFixed(2)}</span>
-                                </div>
-                                <div class="loan-info-row">
-                                    <span style="color: #7f8c8d;">💰 Total with Interest:</span>
-                                    <span style="font-weight: 600; color: #667eea;">${totalWithInterest.toFixed(2)}</span>
-                                </div>
-                            ` : ''}
-                            <div class="loan-info-row">
-                                <span style="color: #7f8c8d;">💵 Total Paid:</span>
-                                <span style="font-weight: 600; color: #27ae60;">${paidAmount.toFixed(2)}</span>
-                            </div>
-                            <div class="loan-info-row">
-                                <span style="color: #7f8c8d;">💸 Remaining:</span>
-                                <span style="font-weight: 600; color: ${remaining > 0 ? '#e74c3c' : '#27ae60'};">${remaining.toFixed(2)}</span>
-                            </div>
-                            ${loan.notes ? `<div style="margin-top: 10px; color: #888; font-style: italic;">📝 ${loan.notes}</div>` : ''}
-                        </div>
-
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${progressPercent}%"></div>
-                        </div>
-                        <div style="text-align: center; font-size: 12px; color: #7f8c8d; margin-bottom: 10px;">
-                            ${progressPercent.toFixed(1)}% paid
-                        </div>
-
-                        ${installmentsHTML}
-                        ${paymentsHTML}
-
-                        <div class="loan-actions">
-                            <button class="btn btn-info btn-sm add-payment-btn" data-loan-id="${loan.id}" data-remaining="${remaining}" type="button">+ Add Payment</button>
-                            <button class="btn btn-secondary btn-sm send-reminder-btn" data-loan-id="${loan.id}" type="button">📧 Send Reminder</button>
-                            <button class="btn btn-danger btn-sm delete-loan-btn" data-loan-id="${loan.id}" data-borrower="${loan.borrower}" type="button">Delete Loan</button>
-                        </div>
-                    `;
-
-                    list.appendChild(li);
-                });
-
-                // Add event listeners to dynamically created buttons
-                document.querySelectorAll('.add-payment-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const loanId = this.getAttribute('data-loan-id');
-                        const remaining = parseFloat(this.getAttribute('data-remaining'));
-                        currentLoanForPayment = currentLoans.find(l => l.id === loanId);
-                        document.getElementById('payment-modal').classList.add('active');
-                        const today = new Date().toISOString().split('T')[0];
-                        document.getElementById('payment-date').value = today;
-                        document.getElementById('payment-amount').max = remaining;
-                    });
-                });
-
-                document.querySelectorAll('.send-reminder-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const loanId = this.getAttribute('data-loan-id');
-                        currentLoanForReminder = currentLoans.find(l => l.id === loanId);
-                        const message = generateReminderMessage(currentLoanForReminder);
-                        document.getElementById('reminder-text').value = message;
-                        document.getElementById('reminder-modal').classList.add('active');
-                    });
-                });
-
-                document.querySelectorAll('.delete-loan-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const loanId = this.getAttribute('data-loan-id');
-                        const borrower = this.getAttribute('data-borrower');
-                        if (confirm(`Delete loan for ${borrower}?`)) {
-                            remove(ref(db, 'users/' + currentUser.uid + '/loans/' + loanId));
-                        }
-                    });
-                });
-
-                document.querySelectorAll('.delete-payment').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const loanId = this.getAttribute('data-loan-id');
-                        const paymentId = this.getAttribute('data-payment-id');
-                        deletePayment(loanId, paymentId);
-                    });
-                });
-
-                document.getElementById('total-lent').textContent = totalLent.toFixed(2);
-                document.getElementById('total-paid').textContent = totalPaidAll.toFixed(2);
-                document.getElementById('outstanding').textContent = outstanding.toFixed(2);
-                document.getElementById('total-interest').textContent = totalInterest.toFixed(2);
-                document.getElementById('active-loans').textContent = activeLoans;
-
-                updateChart();
             });
         }
+    });
 
-        document.getElementById('payment-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (!currentLoanForPayment) return;
+    remindDaysInput.addEventListener('change', checkDueLoans);
+}
 
-            const amount = parseFloat(document.getElementById('payment-amount').value);
-            const date = document.getElementById('payment-date').value;
-            const notes = document.getElementById('payment-notes').value.trim();
-
-            const paymentsRef = ref(db, 'users/' + currentUser.uid + '/loans/' + currentLoanForPayment.id + '/payments');
-            const newPaymentRef = push(paymentsRef);
-            
-            set(newPaymentRef, {
-                amount: amount,
-                date: date,
-                notes: notes,
-                timestamp: Date.now()
-            }).then(() => {
-                closePaymentModal();
-            });
-        });
-
-        document.getElementById('export-btn').addEventListener('click', () => {
-            if (currentLoans.length === 0) {
-                alert('No loans to export!');
-                return;
+document.getElementById('signup-btn').addEventListener('click', () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const msg = document.getElementById('auth-message');
+    if (!email || !password) {
+        msg.textContent = "Please enter email and password";
+        msg.style.color = "#e74c3c";
+        return;
+    }
+    msg.textContent = "Creating account...";
+    msg.style.color = "#667eea";
+    createUserWithEmailAndPassword(auth, email, password)
+        .catch(err => {
+            if (err.code === 'auth/email-already-in-use') {
+                msg.textContent = "Email already registered. Log in instead.";
+                msg.style.color = "#e67e22";
+            } else {
+                msg.textContent = err.message;
+                msg.style.color = "#e74c3c";
             }
+        });
+});
 
-            let csv = 'Borrower,Original Amount,Interest,Total Amount,Total Paid,Remaining,Due Date,Notes,Payment History\n';
-            currentLoans.forEach(loan => {
-                const totalPaid = calculateTotalPaid(loan);
-                const interest = calculateInterest(loan);
-                const totalAmount = calculateTotalWithInterest(loan);
-                const remaining = calculateRemaining(loan);
-                const notes = (loan.notes || '').replace(/"/g, '""');
-                
-                let paymentHistory = '';
-                if (loan.payments) {
-                    const payments = Object.values(loan.payments);
-                    paymentHistory = payments.map(p => `${p.date}:${p.amount.toFixed(2)}`).join('; ');
-                }
-                
-                csv += `"${loan.borrower}","${loan.amount.toFixed(2)}","${interest.toFixed(2)}","${totalAmount.toFixed(2)}","${totalPaid.toFixed(2)}","${remaining.toFixed(2)}","${loan.dueDate}","${notes}","${paymentHistory}"\n`;
-            });
+document.getElementById('login-btn').addEventListener('click', () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const msg = document.getElementById('auth-message');
+    if (!email || !password) {
+        msg.textContent = "Please enter email and password";
+        msg.style.color = "#e74c3c";
+        return;
+    }
+    msg.textContent = "Logging in...";
+    msg.style.color = "#667eea";
+    signInWithEmailAndPassword(auth, email, password)
+        .catch(err => {
+            msg.textContent = err.message;
+            msg.style.color = "#e74c3c";
+        });
+});
 
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `my-loans-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
+document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+
+function deletePayment(loanId, paymentId) {
+    if (confirm('Delete this payment?')) {
+        remove(ref(db, 'users/' + currentUser.uid + '/loans/' + loanId + '/payments/' + paymentId));
+    }
+}
+
+function loadLoans() {
+    if (loansUnsubscribe) loansUnsubscribe();
+
+    loansUnsubscribe = onValue(loansRef, (snapshot) => {
+        let totalLent = 0;
+        let totalPaidAll = 0;
+        let outstanding = 0;
+        let totalInterest = 0;
+        let activeLoans = 0;
+
+        currentLoans = [];
+
+        snapshot.forEach(child => {
+            const loan = child.val();
+            loan.id = child.key;
+            currentLoans.push(loan);
+
+            totalLent += loan.amount;
+            const paidAmount = calculateTotalPaid(loan);
+            totalPaidAll += paidAmount;
+            const interest = calculateInterest(loan);
+            totalInterest += interest;
+            const remaining = calculateRemaining(loan);
+            outstanding += remaining;
+            if (remaining > 0) activeLoans++;
         });
 
-        document.getElementById('loan-form').addEventListener('submit', (e) => {
-            e.preventDefault();
+        document.getElementById('total-lent').textContent = totalLent.toFixed(2);
+        document.getElementById('total-paid').textContent = totalPaidAll.toFixed(2);
+        document.getElementById('outstanding').textContent = outstanding.toFixed(2);
+        document.getElementById('total-interest').textContent = totalInterest.toFixed(2);
+        document.getElementById('active-loans').textContent = activeLoans;
+        document.getElementById('loan-count').textContent = currentLoans.length;
+
+        updateChart();
+        updateAnalytics();
+        updateBorrowerList();
+        applyFiltersAndSort();
+    });
+}
+
+function renderLoans() {
+    const list = document.getElementById('loans-list');
+    list.innerHTML = '';
+    const today = new Date().toISOString().split('T')[0];
+
+    if (filteredLoans.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">No loans found matching your filters.</p>';
+        return;
+    }
+
+    filteredLoans.forEach(loan => {
+        const paidAmount = calculateTotalPaid(loan);
+        const interest = calculateInterest(loan);
+        const totalWithInterest = calculateTotalWithInterest(loan);
+        const remaining = calculateRemaining(loan);
+
+        const li = document.createElement('li');
+        if (loan.dueDate < today && remaining > 0) li.classList.add('overdue');
+
+        const progressPercent = (paidAmount / totalWithInterest) * 100;
+
+        let paymentsHTML = '';
+        if (loan.payments) {
+            const paymentsArray = Object.entries(loan.payments).map(([key, val]) => ({
+                id: key,
+                ...val
+            })).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            paymentsHTML = `
+                <div class="payments-section">
+                    <h4>💵 Payment History (${paymentsArray.length})</h4>
+                    ${paymentsArray.map(payment => `
+                        <div class="payment-item">
+                            <span class="date">${payment.date}</span>
+                            <span class="amount">+$${payment.amount.toFixed(2)}</span>
+                            <button class="delete-payment" data-loan-id="${loan.id}" data-payment-id="${payment.id}" type="button">×</button>
+                        </div>
+                        ${payment.notes ? `<div style="font-size:12px;color:var(--text-light);padding-left:10px;font-style:italic;">${payment.notes}</div>` : ''}
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        let installmentsHTML = '';
+        if (loan.installments) {
+            const installments = generateInstallments(loan);
+            installmentsHTML = `
+                <div class="installments-section">
+                    <h4>📅 Payment Plan (${loan.installments.frequency})</h4>
+                    ${installments.map(inst => {
+                        const isPaid = inst.paid;
+                        const isOverdue = !isPaid && inst.dueDate < today;
+                        return `
+                            <div class="installment-item ${isPaid ? 'paid' : ''} ${isOverdue ? 'overdue' : ''}">
+                                <span>${isPaid ? '✓' : ''} Installment #${inst.number} - ${inst.dueDate}</span>
+                                <span style="font-weight: bold;">$${inst.amount.toFixed(2)}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        li.innerHTML = `
+            <div class="loan-header">
+                <div>
+                    <strong style="font-size: 1.3em;">${loan.borrower}</strong>
+                    ${remaining <= 0 ? '<span style="color: var(--success-color); font-weight: bold; margin-left: 10px;">✓ PAID IN FULL</span>' : ''}
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 1.4em; color: var(--primary-color); font-weight: bold;">$${loan.amount.toFixed(2)}</div>
+                    <div style="font-size: 0.85em; color: var(--text-light);">Original Amount</div>
+                </div>
+            </div>
             
-            const loanData = {
-                borrower: document.getElementById('borrower').value.trim(),
-                amount: parseFloat(document.getElementById('amount').value),
-                dueDate: document.getElementById('due-date').value,
-                notes: document.getElementById('notes').value.trim(),
-                interestRate: parseFloat(document.getElementById('interest-rate').value) || 0,
-                interestType: document.getElementById('interest-type').value,
-                createdAt: Date.now()
-            };
+            <div class="loan-info">
+                <div class="loan-info-row">
+                    <span style="color: var(--text-light);">📅 Due Date:</span>
+                    <span style="font-weight: 600;">${loan.dueDate}</span>
+                </div>
+                ${interest > 0 ? `
+                    <div class="loan-info-row">
+                        <span style="color: var(--text-light);">📈 Interest (${loan.interestRate}% ${loan.interestType}):</span>
+                        <span style="font-weight: 600; color: var(--warning-color);">$${interest.toFixed(2)}</span>
+                    </div>
+                    <div class="loan-info-row">
+                        <span style="color: var(--text-light);">💰 Total with Interest:</span>
+                        <span style="font-weight: 600; color: var(--primary-color);">$${totalWithInterest.toFixed(2)}</span>
+                    </div>
+                ` : ''}
+                <div class="loan-info-row">
+                    <span style="color: var(--text-light);">💵 Total Paid:</span>
+                    <span style="font-weight: 600; color: var(--success-color);">$${paidAmount.toFixed(2)}</span>
+                </div>
+                <div class="loan-info-row">
+                    <span style="color: var(--text-light);">💸 Remaining:</span>
+                    <span style="font-weight: 600; color: ${remaining > 0 ? 'var(--danger-color)' : 'var(--success-color)'};">$${remaining.toFixed(2)}</span>
+                </div>
+                ${loan.notes ? `<div style="margin-top: 10px; color: var(--text-light); font-style: italic;">📝 ${loan.notes}</div>` : ''}
+            </div>
 
-            if (document.getElementById('enable-installments').checked) {
-                loanData.installments = {
-                    count: parseInt(document.getElementById('num-installments').value),
-                    frequency: document.getElementById('installment-frequency').value,
-                    paid: []
-                };
-            }
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${progressPercent}%"></div>
+            </div>
+            <div style="text-align: center; font-size: 12px; color: var(--text-light); margin-bottom: 10px;">
+                ${progressPercent.toFixed(1)}% paid
+            </div>
 
-            const newLoanRef = push(loansRef);
-            set(newLoanRef, loanData).then(() => {
-                e.target.reset();
-                document.getElementById('installments-config').style.display = 'none';
-            });
+            ${installmentsHTML}
+            ${paymentsHTML}
+
+            <div class="loan-actions">
+                <button class="btn btn-info btn-sm add-payment-btn" data-loan-id="${loan.id}" data-remaining="${remaining}" type="button">+ Add Payment</button>
+                <button class="btn btn-secondary btn-sm send-reminder-btn" data-loan-id="${loan.id}" type="button">📧 Send Reminder</button>
+                <button class="btn btn-danger btn-sm delete-loan-btn" data-loan-id="${loan.id}" data-borrower="${loan.borrower}" type="button">Delete Loan</button>
+            </div>
+        `;
+
+        list.appendChild(li);
+    });
+
+    // Add event listeners
+    document.querySelectorAll('.add-payment-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const loanId = this.getAttribute('data-loan-id');
+            const remaining = parseFloat(this.getAttribute('data-remaining'));
+            currentLoanForPayment = currentLoans.find(l => l.id === loanId);
+            document.getElementById('payment-modal').classList.add('active');
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('payment-date').value = today;
+            document.getElementById('payment-amount').max = remaining;
         });
-    </script>
+    });
+
+    document.querySelectorAll('.send-reminder-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const loanId = this.getAttribute('data-loan-id');
+            currentLoanForReminder = currentLoans.find(l => l.id === loanId);
+            const message = generateReminderMessage(currentLoanForReminder);
+            document.getElementById('reminder-text').value = message;
+            document.getElementById('reminder-modal').classList.add('active');
+        });
+    });
+
+    document.querySelectorAll('.delete-loan-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const loanId = this.getAttribute('data-loan-id');
+            const borrower = this.getAttribute('data-borrower');
+            
+            const loanToDelete = currentLoans.find(l => l.id === loanId);
+            const loanData = { ...loanToDelete };
+            
+            if (confirm(`Delete loan for ${borrower}?`)) {
+                remove(ref(db, 'users/' + currentUser.uid + '/loans/' + loanId));
+                
+                showUndo(`Loan for ${borrower} deleted`, () => {
+                    const newLoanRef = push(loansRef);
+                    const { id, ...dataWithoutId } = loanData;
+                    set(newLoanRef, dataWithoutId);
+                });
+            }
+        });
+    });
+
+    document.querySelectorAll('.delete-payment').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const loanId = this.getAttribute('data-loan-id');
+            const paymentId = this.getAttribute('data-payment-id');
+            deletePayment(loanId, paymentId);
+        });
+    });
+}
+
+// Forms
+document.getElementById('payment-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!currentLoanForPayment) return;
+
+    const amount = parseFloat(document.getElementById('payment-amount').value);
+    const date = document.getElementById('payment-date').value;
+    const notes = document.getElementById('payment-notes').value.trim();
+
+    const paymentsRef = ref(db, 'users/' + currentUser.uid + '/loans/' + currentLoanForPayment.id + '/payments');
+    const newPaymentRef = push(paymentsRef);
+    
+    set(newPaymentRef, {
+        amount: amount,
+        date: date,
+        notes: notes,
+        timestamp: Date.now()
+    }).then(() => {
+        closePaymentModal();
+    });
+});
+
+document.getElementById('export-btn').addEventListener('click', () => {
+    if (currentLoans.length === 0) {
+        alert('No loans to export!');
+        return;
+    }
+
+    let csv = 'Borrower,Original Amount,Interest,Total Amount,Total Paid,Remaining,Due Date,Notes,Payment History\n';
+    currentLoans.forEach(loan => {
+        const totalPaid = calculateTotalPaid(loan);
+        const interest = calculateInterest(loan);
+        const totalAmount = calculateTotalWithInterest(loan);
+        const remaining = calculateRemaining(loan);
+        const notes = (loan.notes || '').replace(/"/g, '""');
+        
+        let paymentHistory = '';
+        if (loan.payments) {
+            const payments = Object.values(loan.payments);
+            paymentHistory = payments.map(p => `${p.date}:$${p.amount.toFixed(2)}`).join('; ');
+        }
+        
+        csv += `"${loan.borrower}","${loan.amount.toFixed(2)}","${interest.toFixed(2)}","${totalAmount.toFixed(2)}","${totalPaid.toFixed(2)}","${remaining.toFixed(2)}","${loan.dueDate}","${notes}","${paymentHistory}"\n`;
+    });
+
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `my-loans-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+});
+
+document.getElementById('loan-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const loanData = {
+        borrower: document.getElementById('borrower').value.trim(),
+        amount: parseFloat(document.getElementById('amount').value),
+        dueDate: document.getElementById('due-date').value,
+        notes: document.getElementById('notes').value.trim(),
+        interestRate: parseFloat(document.getElementById('interest-rate').value) || 0,
+        interestType: document.getElementById('interest-type').value,
+        createdAt: Date.now()
+    };
+
+    if (document.getElementById('enable-installments').checked) {
+        loanData.installments = {
+            count: parseInt(document.getElementById('num-installments').value),
+            frequency: document.getElementById('installment-frequency').value,
+            paid: []
+        };
+    }
+
+    const newLoanRef = push(loansRef);
+    set(newLoanRef, loanData).then(() => {
+        e.target.reset();
+        document.getElementById('installments-config').style.display = 'none';
+    });
+});
+
+// Close the script tag
+// </script>
+
 </body>
 </html>
