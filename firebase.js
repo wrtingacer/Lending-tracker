@@ -1,7 +1,6 @@
 // ===== firebase.js - Firebase, Auth, Currency, Sharing, Backup =====
 // NOTE: Use <script type="module"> for this file in index.html:
 // <script type="module" src="firebase.js"></script>
- <script type="module" src="firebase.js">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import {
     getAuth, onAuthStateChanged,
