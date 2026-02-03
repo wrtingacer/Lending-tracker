@@ -8,6 +8,11 @@ let currentSort = 'date-desc';
 let searchQuery = '';
 let undoStack = [];
 
+function translate(key) {
+    if (window.t) return window.t(key);
+    return key;
+}
+
 // ===== DIRECTION TOGGLE (Owe vs Owed) =====
 function setupDirectionToggle() {
     const owBtn = document.getElementById('toggle-owe');
@@ -31,12 +36,12 @@ function setTrackingMode(mode) {
     document.getElementById('toggle-owed').setAttribute('aria-pressed', mode === 'owed');
 
     // Update UI labels dynamically
-    document.getElementById('form-title').textContent = mode === 'owe' ? t('form.add_debt') : t('form.add_lending');
-    document.getElementById('person-label').textContent = mode === 'owe' ? t('form.person_owe') : t('form.person_owed');
+    document.getElementById('form-title').textContent = mode === 'owe' ? translate('form.add_debt') : translate('form.add_lending');
+    document.getElementById('person-label').textContent = mode === 'owe' ? translate('form.person_owe') : translate('form.person_owed');
     document.getElementById('top-person-label').textContent = mode === 'owe' ? 'Largest Creditor' : 'Largest Debtor';
 
     const submitBtn = document.querySelector('#debt-form button[type="submit"]');
-    submitBtn.textContent = mode === 'owe' ? t('form.submit_owe') : t('form.submit_owed');
+    submitBtn.textContent = mode === 'owe' ? translate('form.submit_owe') : translate('form.submit_owed');
 
     // Re-render with mode filter
     if (window.currentDebts && window.currentDebts.length > 0) {
@@ -222,7 +227,7 @@ function updateAnalytics() {
     }
 
     // Top person by remaining amount
-    const persontotals = {};
+    const personTotals = {};
     modeDebts.forEach(d => {
         personTotals[d.person] = (personTotals[d.person] || 0) + calculateRemaining(d);
     });
@@ -546,10 +551,6 @@ window.setupNotifications = function() {
             if (daysLeft === 0) msg = `Due TODAY: ${d.person} – ${window.selectedCurrency} ${formatAmount(rem)}`;
             else if (daysLeft > 0 && daysLeft <= days) msg = `Due in ${daysLeft}d: ${d.person} – ${window.selectedCurrency} ${formatAmount(rem)}`;
             else if (daysLeft < 0) msg = `OVERDUE: ${d.person} – ${window.selectedCurrency} ${formatAmount(rem)}`;
-            if (msg && Notification.permission === 'granted') new Notification('💳 Debt Reminder',
-   // ===== APPEND THIS TO THE END OF app.js =====
-// (This completes the notification setup and adds theme + init)
-
             if (msg && Notification.permission === 'granted') new Notification('💳 Debt Reminder', { body: msg });
         });
     }
@@ -607,4 +608,4 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDirectionToggle();
     setupTemplates();
     setupFilters();
-});                                                                            
+});
