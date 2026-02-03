@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debt Management Blog & Tips</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        :root {
+            --primary:#667eea; --secondary:#764ba2; --success:#27ae60;
+            --text-dark:#2c3e50; --text-light:#7f8c8d;
+            --bg-light:#f8f9fa; --bg-card:#fff; --border:#e0e0e0;
+        }
+
+        body.dark-mode {
+            --primary:#7c3aed; --secondary:#8b5cf6;
+            --text-dark:#e5e7eb; --text-light:#9ca3af;
+            --bg-light:#1f2937; --bg-card:#111827; --border:#374151;
+        }
+
+        body {
+            font-family:'Segoe UI',Tahoma,sans-serif;
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            min-height:100vh; padding:20px; color:var(--text-dark);
+            transition:background .3s;
+        }
+
+        .blog-layout { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr 320px; gap:20px; }
+
+        /* Header */
+        .blog-header {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            color:#fff; text-align:center; padding:40px 20px;
+            border-radius:20px 20px 0 0; position:relative;
+        }
+        .blog-header h1 { font-size:2.4em; margin-bottom:8px; }
+        .blog-header p { opacity:.9; }
+
+        .header-nav { position:absolute; top:18px; display:flex; gap:12px; }
+        .header-nav.left { left:18px; }
+        .header-nav.right { right:18px; }
+        .header-nav a, .header-nav button {
+            background:rgba(255,255,255,.2); border:none; color:#fff;
+            padding:8px 14px; border-radius:8px; cursor:pointer; text-decoration:none;
+            font-size:14px; font-weight:600; transition:.3s;
+        }
+        .header-nav a:hover, .header-nav button:hover { background:rgba(255,255,255,.35); text-decoration:none; }
+
+        /* Main content */
+        .blog-main { background:var(--bg-card); border-radius:0 0 20px 20px; padding:30px; box-shadow:0 10px 40px rgba(0,0,0,.2); }
+
+        /* Newsletter Box */
+        .newsletter-box {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            color:#fff; border-radius:16px; padding:30px; margin-bottom:30px; text-align:center;
+        }
+        .newsletter-box h3 { font-size:1.5em; margin-bottom:8px; }
+        .newsletter-box p { opacity:.9; margin-bottom:16px; font-size:14px; }
+        .newsletter-form { display:flex; gap:10px; max-width:500px; margin:0 auto; flex-wrap:wrap; justify-content:center; }
+        .newsletter-form input {
+            flex:1; min-width:200px; padding:12px 16px; border:none; border-radius:8px;
+            font-size:14px;
+        }
+        .newsletter-form button {
+            background:#fff; color:var(--primary); border:none; padding:12px 24px;
+            border-radius:8px; font-weight:700; cursor:pointer; font-size:14px; transition:.3s;
+        }
+        .newsletter-form button:hover { background:#f0f0f0; }
+        #newsletter-msg { margin-top:10px; font-size:13px; min-height:18px; }
+
+        /* Blog Cards */
+        .blog-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+
+        .blog-card {
+            background:var(--bg-light); border-radius:12px; overflow:hidden;
+            border:2px solid var(--border); transition:.3s;
+        }
+        .blog-card:hover { border-color:var(--primary); box-shadow:0 4px 16px rgba(0,0,0,.1); }
+
+        .blog-card-img {
+            height:140px; display:flex; align-items:center; justify-content:center;
+            font-size:48px; background:linear-gradient(135deg,var(--primary),var(--secondary));
+        }
+
+        .blog-card-body { padding:18px; }
+        .blog-card-body .tag {
+            display:inline-block; background:var(--primary); color:#fff;
+            padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; margin-bottom:8px;
+        }
+        .blog-card-body h3 { font-size:1.1em; margin-bottom:8px; color:var(--text-dark); }
+        .blog-card-body p { font-size:13px; color:var(--text-light); line-height:1.5; margin-bottom:12px; }
+        .blog-card-body .read-more {
+            color:var(--primary); font-weight:600; font-size:13px;
+            cursor:pointer; text-decoration:none;
+        }
+        .blog-card-body .read-more:hover { text-decoration:underline; }
+        .blog-card-body .meta { font-size:11px; color:var(--text-light); margin-bottom:6px; }
+
+        /* Expanded Article */
+        .article-overlay {
+            display:none; position:fixed; inset:0; background:rgba(0,0,0,.6);
+            z-index:1000; align-items:center; justify-content:center; padding:20px;
+        }
+        .article-overlay.active { display:flex; }
+        .article-box {
+            background:var(--bg-card); border-radius:16px; max-width:700px; width:100%;
+            max-height:85vh; overflow-y:auto; padding:36px; position:relative;
+        }
+        .article-box .close-article {
+            position:absolute; top:14px; right:14px; background:var(--bg-light);
+            border:none; font-size:20px; cursor:pointer; padding:6px 12px; border-radius:6px; color:var(--text-dark);
+        }
+        .article-box h2 { margin-bottom:10px; color:var(--text-dark); }
+        .article-box .article-meta { font-size:13px; color:var(--text-light); margin-bottom:18px; }
+        .article-box p { line-height:1.7; margin-bottom:14px; color:var(--text-dark); font-size:15px; }
+        .article-box h3 { margin:18px 0 8px; color:var(--primary); }
+        .article-box ul { margin:8px 0 14px 20px; line-height:1.8; }
+
+        /* Sidebar */
+        .blog-sidebar { display:flex; flex-direction:column; gap:18px; }
+
+        .sidebar-card { background:var(--bg-card); border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,.1); }
+        .sidebar-card h4 { margin-bottom:12px; color:var(--text-dark); font-size:1em; }
+
+        .ad-space {
+            background:var(--bg-card); border-radius:12px; min-height:250px;
+            display:flex; align-items:center; justify-content:center;
+            border:2px dashed var(--border); text-align:center;
+            color:var(--text-light);
+        }
+        .ad-label { font-size:14px; }
+        .ad-size { font-size:12px; }
+
+        .tools-list { list-style:none; }
+        .tools-list li { padding:10px 0; border-bottom:1px solid var(--border); font-size:14px; }
+        .tools-list li:last-child { border:none; }
+        .tools-list a { color:var(--primary); font-weight:600; text-decoration:none; }
+        .tools-list a:hover { text-decoration:underline; }
+        .tools-list span { display:block; font-size:12px; color:var(--text-light); margin-top:2px; }
+
+        /* Footer */
+        .blog-footer {
+            max-width:1200px; margin:30px auto 0; color:rgba(255,255,255,.7);
+            text-align:center; padding:24px 20px; font-size:13px;
+        }
+        .blog-footer a { color:#fff; text-decoration:underline; }
+        .blog-footer .disclaimer { font-size:11px; margin-top:10px; max-width:750px; margin-left:auto; margin-right:auto; line-height:1.5; }
+
+        /* Responsive */
+        @media (max-width:900px) {
+            .blog-layout { grid-template-columns:1fr; }
+            .blog-sidebar { order:2; flex-direction:row; flex-wrap:wrap; }
+            .sidebar-card, .ad-space { flex:1; min-width:250px; }
+        }
+
+        @media (max-width:500px) {
+            .blog-header h1 { font-size:1.7em; }
+            .header-nav { position:static; justify-content:center; margin-bottom:12px; }
+            .blog-grid { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Article Overlay -->
+    <div class="article-overlay" id="article-overlay">
+        <div class="article-box">
+            <button class="close-article" id="close-article" type="button" aria-label="Close article">✕</button>
+            <div id="article-content"></div>
+        </div>
+    </div>
+
+    <div class="blog-layout">
+        <!-- Main -->
+        <div>
+            <div class="blog-header">
+                <div class="header-nav left">
+                    <a href="index.html">← Back to App</a>
+                </div>
+                <div class="header-nav right">
+                    <button id="blog-theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
+                </div>
+                <h1>📰 Debt Management Blog</h1>
+                <p>Tips, guides & tools to take control of your finances</p>
+            </div>
+
+            <div class="blog-main">
+                <!-- Newsletter -->
+                <div class="newsletter-box">
+                    <h3>📬 Stay in the Loop</h3>
+                    <p>Get weekly tips on debt management, budgeting & financial freedom straight to your inbox.</p>
+                    <div class="newsletter-form">
+                        <input type="email" id="newsletter-email" placeholder="Enter your email..." aria-label="Email address">
+                        <button id="newsletter-btn" type="button">Subscribe Free</button>
+                    </div>
+                    <div id="newsletter-msg"></div>
+                </div>
+
+                <!-- Blog Articles -->
+                <div class="blog-grid" id="blog-grid"></div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="blog-sidebar" aria-label="Sidebar">
+            <div class="ad-space" aria-label="Advertisement">
+                <div><p class="ad-label">Advertisement</p><p class="ad-size">300 x 250</p></div>
+            </div>
+
+            <div class="sidebar-card">
+                <h4>🛠️ Recommended Finance Tools</h4>
+                <ul class="tools-list">
+                    <li><a href="https://www.mint.com" target="_blank" rel="noopener">Mint</a><span>Budgeting & expense tracking</span></li>
+                    <li><a href="https://ynab.com" target="_blank" rel="noopener">YNAB</a><span>Zero-based budgeting tool</span></li>
+                    <li><a href="https://www.personalcapital.com" target="_blank" rel="noopener">Personal Capital</a><span>Net worth & investment tracker</span></li>
+                    <li><a href="https://www.creditkarma.com" target="_blank" rel="noopener">Credit Karma</a><span>Free credit score monitoring</span></li>
+                    <li><a href="https://www.transferwise.com" target="_blank" rel="noopener">Wise (TransferWise)</a><span>Low-fee international transfers</span></li>
+                </ul>
+            </div>
+
+            <div class="ad-space" aria-label="Advertisement">
+                <div><p class="ad-label">Advertisement</p><p class="ad-size">300 x 250</p></div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Footer -->
+    <footer class="blog-footer">
+        <p><strong>Disclaimer:</strong> This site may earn commissions from affiliate links and advertisements. We only recommend products we believe in.</p>
+        <p class="disclaimer">
+            Payments made via integrated apps (M-Pesa, PayPal, Cash App) are processed by those platforms and are not managed by this site.
+            Your data is stored securely via Firebase over HTTPS. We comply with Kenya's Data Protection Act 2019 and the EU's GDPR.
+            For full details see our <a href="index.html#privacy">Privacy Policy</a>.
+            &copy; 2025 Debt Tracker. All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+    // ===== DARK MODE =====
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('blog-theme-toggle').textContent = '☀️'; }
+    document.getElementById('blog-theme-toggle').addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        document.getElementById('blog-theme-toggle').textContent = isDark ? '☀️' : '🌙';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    // ===== NEWSLETTER =====
+    document.getElementById('newsletter-btn').addEventListener('click', () => {
+        const email = document.getElementById('newsletter-email').value.trim();
+        const msg = document.getElementById('newsletter-msg');
+        if (!email || !email.includes('@')) { msg.textContent = '⚠️ Please enter a valid email.'; msg.style.color = '#fff'; return; }
+        // Simulated subscription (replace with real API like Mailchimp / ConvertKit)
+        msg.textContent = '✅ Thank you! You\'re subscribed.';
+        msg.style.color = '#fff';
+        document.getElementById('newsletter-email').value = '';
+        // Store in localStorage for demo
+        const subs = JSON.parse(localStorage.getItem('newsletter_subs') || '[]');
+        subs.push({ email, date: new Date().toISOString() });
+        localStorage.setItem('newsletter_subs', JSON.stringify(subs));
+    });
+
+    // ===== BLOG DATA =====
+    const blogs = [
+        {
+            id: 1, tag: "Basics", icon: "📖", title: "Understanding Debt: The Basics You Need to Know",
+            meta: "5 min read · Jan 2025", summary: "Learn what debt is, how interest works, and why managing it early makes a big difference.",
+            body: `<h2>Understanding Debt: The Basics</h2><p class="article-meta">5 min read · January 2025</p>
+            <p>Debt is simply money you borrow with the promise to pay it back — usually with interest. Understanding how debt works is the first step to managing it wisely.</p>
+            <h3>What is Interest?</h3><p>Interest is the cost of borrowing money. It's usually expressed as a percentage per year (APR). For example, if you borrow KES 10,000 at 10% interest, you'll owe KES 11,000 after one year.</p>
+            <h3>Types of Debt</h3><ul><li><strong>Personal Loans</strong> – Borrowed from friends, family, or financial institutions.</li><li><strong>Credit Card Debt</strong> – Usually carries high interest rates (15–30%).</li><li><strong>Student Loans</strong> – Often at lower rates but can take years to repay.</li><li><strong>Mortgages</strong> – Long-term loans for property.</li></ul>
+            <h3>Why Track Your Debt?</h3><p>Tracking helps you see the full picture — how much you owe, to whom, and when payments are due. It prevents missed payments and reduces stress.</p>`
+        },
+        {
+            id: 2, tag: "Strategy", icon: "⚡", title: "The Snowball vs Avalanche Method",
+            meta: "4 min read · Jan 2025", summary: "Two popular debt repayment strategies compared — find out which one works best for your situation.",
+            body: `<h2>Snowball vs Avalanche</h2><p class="article-meta">4 min read · January 2025</p>
+            <p>When you have multiple debts, choosing a repayment strategy can save you thousands.</p>
+            <h3>The Snowball Method</h3><p>Pay off your <strong>smallest debt first</strong>, then roll that payment into the next. It's psychologically motivating because you get quick wins.</p>
+            <h3>The Avalanche Method</h3><p>Pay off the debt with the <strong>highest interest rate first</strong>. This saves you the most money in the long run.</p>
+            <h3>Which Should You Choose?</h3><ul><li>If you need motivation → Snowball</li><li>If you want to save the most money → Avalanche</li><li>If debts are similar in size → either works!</li></ul>
+            <p>Use our Debt Tracker app to set up payment plans and visualize your progress with either strategy.</p>`
+        },
+        {
+            id: 3, tag: "Budgeting", icon: "💰", title: "Creating a Budget That Actually Works",
+            meta: "6 min read · Feb 2025", summary: "Stop guessing where your money goes. Here's a simple budgeting framework you can start today.",
+            body: `<h2>Budgeting That Works</h2><p class="article-meta">6 min read · February 2025</p>
+            <p>A budget is simply a plan for your money. Without one, debts tend to grow quietly.</p>
+            <h3>The 50/30/20 Rule</h3><ul><li><strong>50%</strong> – Needs (rent, food, transport)</li><li><strong>30%</strong> – Wants (entertainment, dining out)</li><li><strong>20%</strong> – Savings & Debt Repayment</li></ul>
+            <h3>Step-by-Step</h3><ol style="margin:8px 0 14px 20px;line-height:1.8;"><li>Calculate your monthly income (after tax).</li><li>List all your monthly expenses.</li><li>Categorise them into Needs, Wants, and Savings.</li><li>Adjust until your budget balances.</li><li>Track weekly to stay on course.</li></ol>
+            <p>Tools like spreadsheets, apps like YNAB or Mint, or even our Debt Tracker can help you stay organised.</p>`
+        },
+        {
+            id: 4, tag: "Tips", icon: "🌟", title: "5 Ways to Avoid Debt Altogether",
+            meta: "3 min read · Feb 2025", summary: "Prevention is better than cure. Learn practical habits to keep debt from creeping into your life.",
+            body: `<h2>5 Ways to Avoid Debt</h2><p class="article-meta">3 min read · February 2025</p>
+            <ol style="margin:8px 0 14px 20px;line-height:2;"><li><strong>Build an Emergency Fund</strong> – Aim for 3–6 months of expenses saved up.</li><li><strong>Pay Cash When Possible</strong> – If you can't pay cash, you probably can't afford it.</li><li><strong>Avoid Lifestyle Inflation</strong> – Don't spend more just because you earn more.</li><li><strong>Say No to Peer Pressure</strong> – Group trips and shared expenses can lead to hidden debt.</li><li><strong>Live Below Your Means</strong> – The gap between income and spending is your wealth builder.</li></ol>
+            <p>These habits take time to build, but they dramatically reduce financial stress in the long run.</p>`
+        },
+        {
+            id: 5, tag: "Tools", icon: "📱", title: "Best Apps for Managing Money in Kenya",
+            meta: "5 min read · Feb 2025", summary: "From M-Pesa to budgeting apps — here are the top tools Kenyans use to take control of their finances.",
+            body: `<h2>Best Money Apps for Kenya</h2><p class="article-meta">5 min read · February 2025</p>
+            <h3>Payments & Transfers</h3><ul><li><strong>M-Pesa</strong> – Kenya's #1 mobile money platform. Send, pay, save.</li><li><strong>Pesalink</strong> – Instant bank-to-bank transfers between Kenyan banks.</li></ul>
+            <h3>Budgeting & Tracking</h3><ul><li><strong>YNAB</strong> – Zero-based budgeting, works in any currency.</li><li><strong>Mint</strong> – Auto-categorises spending and tracks goals.</li><li><strong>Debt Tracker (Our App!)</strong> – Track debts, payments, and more.</li></ul>
+            <h3>Saving & Investing</h3><ul><li><strong>Wealthvest</strong> – Micro-investing in Kenya.</li><li><strong>Zimmer</strong> – Group savings (chama) management.</li></ul>
+            <p>The best approach is to combine tools: use M-Pesa for payments, a budgeting app for planning, and Debt Tracker for managing what you owe.</p>`
+        },
+        {
+            id: 6, tag: "International", icon: "🌍", title: "Managing Debts Across Currencies",
+            meta: "4 min read · Mar 2025", summary: "Travelling or borrowing in foreign currency? Here's how to handle multi-currency debts smartly.",
+            body: `<h2>Multi-Currency Debt Management</h2><p class="article-meta">4 min read · March 2025</p>
+            <p>If you travel often or have friends abroad, you might end up owing money in different currencies — and that adds complexity.</p>
+            <h3>Why Currency Matters</h3><p>Exchange rates fluctuate daily. A debt of $100 today might be worth KES 16,000 — but next month it could be KES 15,500 or KES 16,500.</p>
+            <h3>Tips for Multi-Currency Debts</h3><ul><li>Always record the <strong>original currency</strong> when the debt was created.</li><li>Use live exchange rates when calculating what you owe.</li><li>Consider paying in the original currency to avoid conversion fees.</li><li>Use apps like Wise for low-fee international transfers.</li></ul>
+            <p>Our Debt Tracker supports KES, USD, EUR, GBP, ZAR, NGN, and TZS with live exchange rate updates.</p>`
+        }
+    ];
+
+    // ===== RENDER BLOG =====
+    function renderBlogs() {
+        const grid = document.getElementById('blog-grid');
+        grid.innerHTML = blogs.map(b => `
+            <div class="blog-card" role="article">
+                <div class="blog-card-img">${b.icon}</div>
+                <div class="blog-card-body">
+                    <span class="tag">${b.tag}</span>
+                    <p class="meta">${b.meta}</p>
+                    <h3>${b.title}</h3>
+                    <p>${b.summary}</p>
+                    <a class="read-more" data-id="${b.id}" role="button" tabindex="0" aria-label="Read more: ${b.title}">Read More →</a>
+                </div>
+            </div>
+        `).join('');
+
+        // Bind read more
+        document.querySelectorAll('.read-more').forEach(link => {
+            const handler = function() {
+                const blog = blogs.find(b => b.id === parseInt(this.getAttribute('data-id')));
+                if (blog) {
+                    document.getElementById('article-content').innerHTML = blog.body;
+                    document.getElementById('article-overlay').classList.add('active');
+                }
+            };
+            link.addEventListener('click', handler);
+            link.addEventListener('keydown', function(e) { if(e.key==='Enter') handler.call(this); });
+        });
+    }
+
+    document.getElementById('close-article').addEventListener('click', () => {
+        document.getElementById('article-overlay').classList.remove('active');
+    });
+
+    document.getElementById('article-overlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) e.currentTarget.classList.remove('active');
+    });
+
+    renderBlogs();
+    </script>
+</body>
+</html>
