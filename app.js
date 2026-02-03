@@ -81,7 +81,9 @@ function setupFilters() {
     document.querySelectorAll('.filter-tag').forEach(tag => {
         tag.addEventListener('click', function() {
             document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.filter-tag').forEach(t => t.setAttribute('aria-pressed', 'false'));
             this.classList.add('active');
+            this.setAttribute('aria-pressed', 'true');
             currentFilter = this.getAttribute('data-filter');
             applyFiltersAndSort();
         });
