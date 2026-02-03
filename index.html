@@ -129,10 +129,10 @@
                             </select>
                         </div>
                         <div class="filter-tags" role="group" aria-label="Filter options">
-                            <div class="filter-tag active" data-filter="all" role="button" tabindex="0">All</div>
-                            <div class="filter-tag" data-filter="unpaid" role="button" tabindex="0">Unpaid</div>
-                            <div class="filter-tag" data-filter="paid" role="button" tabindex="0">Paid</div>
-                            <div class="filter-tag" data-filter="overdue" role="button" tabindex="0">Overdue</div>
+                            <div class="filter-tag active" data-filter="all" role="button" tabindex="0" aria-pressed="true">All</div>
+                            <div class="filter-tag" data-filter="unpaid" role="button" tabindex="0" aria-pressed="false">Unpaid</div>
+                            <div class="filter-tag" data-filter="paid" role="button" tabindex="0" aria-pressed="false">Paid</div>
+                            <div class="filter-tag" data-filter="overdue" role="button" tabindex="0" aria-pressed="false">Overdue</div>
                         </div>
                     </div>
 
@@ -172,6 +172,7 @@
                                 <button id="notify-toggle" class="btn btn-secondary btn-sm" type="button">Enable</button>
                             </div>
                         </div>
+                        <p class="helper-text">Your browser will ask for notification permission the first time you enable reminders.</p>
                     </div>
 
                     <!-- Add Debt Form -->
