@@ -30,7 +30,9 @@ const translations = {
         "onboarding.ready_title": "You're All Set!",
         "onboarding.ready_desc": "Start by adding your first debt or lending entry. We're here to help!",
         "privacy.title": "Privacy Policy",
-        "privacy.body": "We take your privacy seriously.\n\n1. DATA STORAGE: All data is stored securely on Firebase (Google Cloud) over HTTPS with 256-bit encryption.\n\n2. CLIENT-SIDE ENCRYPTION: Sensitive fields (amounts, notes) are encrypted before being sent to the server using AES-256.\n\n3. DATA USAGE: Your data is only used to power the Debt Tracker app. We never sell or share personal data with third parties.\n\n4. COOKIES: We use minimal cookies only for authentication and theme preference.\n\n5. YOUR RIGHTS: Under Kenya's Data Protection Act 2019 and GDPR, you have the right to access, edit, or delete your data at any time.\n\n6. CONTACT: If you have concerns, email us at privacy@debttracker.app\n\nLast updated: January 2025"
+        "privacy.body": "We take your privacy seriously.\n\n1. DATA STORAGE: All data is stored securely on Firebase (Google Cloud) over HTTPS with encryption in transit.\n\n2. DATA USAGE: Your data is only used to power the Debt Tracker app. We never sell or share personal data with third parties.\n\n3. COOKIES: We use minimal cookies only for authentication and theme preference.\n\n4. YOUR RIGHTS: Under Kenya's Data Protection Act 2019 and GDPR, you have the right to access, edit, or delete your data at any time.\n\n5. CONTACT: If you have concerns, email us at privacy@debttracker.app\n\nLast updated: January 2025",
+        "terms.title": "Terms of Service",
+        "terms.body": "By using Debt Tracker, you agree to the following:\n\n1. PERSONAL USE: This app is for personal finance tracking and does not provide legal or financial advice.\n\n2. DATA ACCURACY: You are responsible for the accuracy of any data you enter.\n\n3. THIRD-PARTY SERVICES: Payments made via M-Pesa, PayPal, or Cash App are handled by those services and are not managed by Debt Tracker.\n\n4. LIMITATION OF LIABILITY: We are not liable for losses that result from using this app.\n\n5. CHANGES: We may update these terms periodically. Continued use indicates acceptance.\n\nLast updated: January 2025"
     },
     sw: {
         "app.title": "Kisimisha cha Madeni",
@@ -61,7 +63,9 @@ const translations = {
         "onboarding.ready_title": "Uko Tayari!",
         "onboarding.ready_desc": "Anza kwa kuongeza deni lako la kwanza. Tuko hapa kukusaidia!",
         "privacy.title": "Sera ya Faragha",
-        "privacy.body": "Tunajali faragha yako sana.\n\n1. UHIFADHI WA DATA: Data yote imehifadhiwa salama kwenye Firebase (Google Cloud) kwa HTTPS na kisifuji cha 256-bit.\n\n2. KISIFUJI: Mashamba muhimu yamefichwa kabla ya kutumwa kwenye seva.\n\n3. MATUMIZI YA DATA: Data yako inatumika tu kwa programu ya Debt Tracker. Hatuuzi au kushiriki data ya kibinafsi.\n\n4. KUKI: Tunatumia kuki chache tu kwa uthibitisho na usanifu.\n\n5. HAKI ZAKO: Chini ya Akta ya Kulinda Data ya Kenya 2019, una haki ya kupata, kubadilisha au kufuta data yako wakati wowote.\n\nIlisasishwa: Januari 2025"
+        "privacy.body": "Tunajali faragha yako sana.\n\n1. UHIFADHI WA DATA: Data yote imehifadhiwa salama kwenye Firebase (Google Cloud) kwa HTTPS na usimbaji data wakati wa kutumwa.\n\n2. MATUMIZI YA DATA: Data yako inatumika tu kwa programu ya Debt Tracker. Hatuuzi au kushiriki data ya kibinafsi.\n\n3. KUKI: Tunatumia kuki chache tu kwa uthibitisho na usanifu.\n\n4. HAKI ZAKO: Chini ya Akta ya Kulinda Data ya Kenya 2019, una haki ya kupata, kubadilisha au kufuta data yako wakati wowote.\n\nIlisasishwa: Januari 2025",
+        "terms.title": "Masharti ya Matumizi",
+        "terms.body": "Kwa kutumia Debt Tracker, unakubali yafuatayo:\n\n1. MATUMIZI BINAFSI: Programu hii ni ya kufuatilia fedha zako na haitoi ushauri wa kisheria au kifedha.\n\n2. USAHIHI WA DATA: Wewe ndiye mwenye jukumu la usahihi wa data unayoingiza.\n\n3. HUDUMA ZA WENGINE: Malipo kupitia M-Pesa, PayPal, au Cash App yanashughulikiwa na huduma hizo, si Debt Tracker.\n\n4. UKOMO WA DHIMA: Hatuwajibiki kwa hasara zinazotokana na matumizi ya programu.\n\n5. MABADILIKO: Tunaweza kusasisha masharti haya mara kwa mara. Kuendelea kutumia kunamaanisha unakubali.\n\nIlisasishwa: Januari 2025"
     }
 };
 
@@ -101,6 +105,9 @@ function toggleLanguage() {
 function t(key) {
     return (translations[currentLang] && translations[currentLang][key]) || key;
 }
+
+window.t = t;
+window.checkAndShowOnboarding = checkAndShowOnboarding;
 
 // ===== ONBOARDING =====
 let onboardingStep = 0;
@@ -164,6 +171,13 @@ function showPrivacy() {
     modal.classList.add('active');
 }
 
+function showTerms() {
+    const modal = document.getElementById('reminder-modal');
+    modal.querySelector('h2').textContent = t('terms.title');
+    document.getElementById('reminder-text').value = t('terms.body');
+    modal.classList.add('active');
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
     initI18n();
@@ -175,4 +189,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Privacy links
     document.getElementById('privacy-link').addEventListener('click', (e) => { e.preventDefault(); showPrivacy(); });
     document.getElementById('privacy-link-footer').addEventListener('click', (e) => { e.preventDefault(); showPrivacy(); });
+    document.getElementById('terms-link').addEventListener('click', (e) => { e.preventDefault(); showTerms(); });
+});
+
+document.addEventListener('keydown', (event) => {
+    const modal = document.getElementById('onboarding-modal');
+    if (event.key === 'Escape' && modal.classList.contains('active')) {
+        hideOnboarding();
+    }
 });
